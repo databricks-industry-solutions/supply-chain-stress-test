@@ -42,6 +42,6 @@ Any issues discovered through the use of this project should be filed as GitHub 
 
 | library                                | description             | license    | source                                              |
 |----------------------------------------|-------------------------|------------|-----------------------------------------------------|
-| pyomo | An object-oriented algebraic modeling language in Python for structured optimization problems | BSD | https://pypi.org/project/pyomo/
+| pyomo | An object-oriented algebraic modeling language in Python for structured optimization problems | BSD-3 | https://pypi.org/project/pyomo/
 | highspy | Linear optimization solver (HiGHS) | MIT | https://pypi.org/project/highspy/
 | ray | Framework for scaling AI/Python applications | Apache 2.0 | https://github.com/ray-project/ray
