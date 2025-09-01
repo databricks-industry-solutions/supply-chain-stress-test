@@ -34,70 +34,98 @@ import scripts.utils as utils
 
 mlflow.langchain.autolog()
 
-LLM_ENDPOINT = "databricks-llama-4-maverick"
+LLM_ENDPOINT = "ryuta-gpt"
+
 config = {
     "endpoint_name": LLM_ENDPOINT,
     "catalog": "supply_chain_stress_test",
     "database": "data",
     "volume": "operational",
     "temperature": 0.01,
-    "max_tokens": 1000,
+    "max_tokens": 10000,
     "system_prompt": """
-    "You are a helpful assistant that answers questions about a supply chain network. Questions outside this topic are considered irrelevant. You use a set of tools to provide answers, and if needed, you ask the user follow up questions to clarify their request.
+    "You are a helpful assistant that answers questions about a supply chain network. Questions outside this topic are considered irrelevant. You use a set of tools to provide answers, and if needed, you ask the user follow up questions to clarify their request. You may need to execute multiple tools in sequence to build up the final answer. When you receive a request, first plan the steps carefully and then execute.
 
-    Below are the definitions of the model parameters:
-    Parameters            | What it represents                                                                              --------------------- | -------------------------------------------------------------------------------------------------- | tier1 / tier2 / tier3 | Lists of node IDs in each tier.                                                                    |edges                 | Directed links `(source, target)` showing which node supplies which.                               |material_type         | List of all material types.                                                                        |
-    supplier_material_type| Material type each supplier produces and supplies.                                                 |
-    f                     | Profit margin for each Tier 1 node’s finished product.                                             |
-    s                     | On-hand inventory units at every node.                                                             |
-    d                     | Demand per time unit for Tier 1 products.                                                          |
-    c                     | Production capacity per time unit at each node.                                                    |
-    r                     | Number of material types (k) required to make one unit of node j.                                  |
-    N_minus               | For each node j (Tier 1 or 2), the set of material types it requires.                              |
-    N_plus                | For each supplier i (Tier 2 or 3), the set of downstream nodes j it feeds.                         |
-    P                     | For each (j, material_part) pair, a list of upstream suppliers i that provides it (multi-sourcing view). |
+    When interpreting the output of the optimization tool, make use of the following definiiotns of the parameters, decision variables and metric.
+
+    - Below are the definitions of the important metrics:
+    Metrics               | What it represents
+    TTR                   | Stands for time to recover. Recovery time for a node or group after a disruption.               |
+    TTS                   | Stands for time to survive. TTS indicates how long the network can meet demand with no loss.    |
+
+    - Below are the definitions of the model parameters:
+    Parameters            | What it represents                                                                                      | 
+    tier1 / tier2 / tier3 | Lists of node IDs in each tier.                                                                         |
+    edges                 | Directed links `(source, target)` showing which node supplies which.                                    |
+    material_type         | List of all material types.                                                                             |
+    supplier_material_type| Material type each supplier produces and supplies.                                                      |
+    f                     | Profit margin for each Tier 1 node's finished product.                                                  |
+    s                     | On-hand inventory units at every node.                                                                  |
+    d                     | Demand per time unit for Tier 1 products.                                                               |
+    c                     | Production capacity per time unit at each node.                                                         |
+    r                     | Number of material types (k) required to make one unit of node j.                                       |
+    N_minus               | For each node j (Tier 1 or 2), the set of material types it requires.                                   |
+    N_plus                | For each supplier i (Tier 2 or 3), the set of downstream nodes j it feeds.                              |
+    P                     | For each (j, material_part) pair, a list of upstream suppliers i that provides it (multi-sourcing view).|
     
-    And the definitions of decision variables:
-    Decision Variables    | What it represents                                                                              --------------------- | -------------------------------------------------------------------------------------------------- | 
-    l                     | Production volume lost of the product of the node.                                                 |u                     | Total production volume of the node during the ttr.                                                |y                     | Allocation of upstream node to downsteam node during the ttr.                                      |
+    - Below are the definitions of decision variables:
+    Decision Variables    | What it represents                                                                                 | 
+    l                     | Production volume lost of the product of the node.                                                 |
+    u                     | Total production volume of the node during the ttr.                                                |
+    y                     | Allocation of upstream node to downsteam node during the ttr.                                      |
     
-    Do not forget to report the profit loss during the recovery period. When providing recommendations, base them on the interpretation of the decision variables and summarize the best actions for this scenario. Provide precise numbers whenever possible.
+    Report the profit loss during the recovery period. When giving recommendations, compare the optimized network with and without the disruption and base them on differences in the decision variables. Include detailed action plans, a summary of the best actions for this scenario, and precise numbers whenever possible. Finally, the users of this tool are buisness analysts, so keep the language simple and avoid technical terms.
     """,
 }
 
 @tool
-@mlflow.trace(name="TTR", span_type=mlflow.entities.SpanType.TOOL)
-def ttr_agent_tool(
-    disrupted: list[str],
-    ttr: float,
+def data_access_tool(
     catalog: str = config["catalog"],
     database: str = config["database"],
     volume: str = config["volume"],
-    ) -> str:
+    ):
     """
-    Runs an optimization algorithm for a given disrupted scenario and returns the results as a string.
+    Accesses supply chain dataset stored in the specified Unity Catalog Volume and returns the data. 
 
     Parameters:
-    disrupted (list[str]): List of disrupted nodes in the scenario.
-    ttr (float): Time to recover (TTR) for the disruption scenario.
     catalog (str): Catalog name for Unity Catalog.
     database (str): Database name in Unity Catalog.
     volume (str): Volume name in Unity Catalog.
     
     Returns:
-    str: A string representation of the optimization results.
+    str: Dataset results.
     """    
     # Get the operational data from Unity Catalog Volume
     w = WorkspaceClient(host=os.getenv("HOST"), token=os.getenv("TOKEN"))
     path = f'/Volumes/{catalog}/{database}/{volume}/dataset_small.json'
-    resp = w.files.download(path)  # returns DownloadResponse with a BinaryIO at .contents
+    resp = w.files.download(path)
     with resp.contents as fh:
-        dataset = json.load(fh)   # `data` is now a Python dict/list
+        dataset = json.load(fh)
 
-    # Build and solve TTR
-    df = utils.build_and_solve_ttr(dataset, disrupted, ttr, True)
-    model = df["model"].values[0]
-    records = []
+    return dataset
+
+@tool
+def optimization_tool(
+    disrupted: list[str],
+    ttr: float,
+    ) -> str:
+    """
+    Runs optimization algorithms for a given disrupted scenario and returns the results as a string. This function first solves the optimization problem without considering the disruption, and then solves the problem with the disruption. The function returns a string containing the results of both optimizations.
+
+    Parameters:
+    disrupted (list[str]): List of disrupted nodes in the scenario.
+    ttr (float): Time to recover (TTR) for the disruption scenario.
+    
+    Returns:
+    str: A string representation of the optimization results.
+    """    
+    # Get the operational data from Unity Catalog Volume
+    dataset = data_access_tool.func()
+
+    # Solve the TTR model without distruption
+    df_normal = utils.build_and_solve_ttr(dataset, [], ttr, True)
+    model = df_normal["model"].values[0]
+    records_normal = []
     for v in model.component_data_objects(ctype=pyo.Var, active=True):
         idx  = v.index()
         record  = {
@@ -105,11 +133,31 @@ def ttr_agent_tool(
             "index"     : idx,
             "value"     : pyo.value(v),
         }
-        records.append(record)
-
-    df["model"] = str(records)
+        records_normal.append(record)
     
-    row_str = ",".join(f"{k}={v}" for k, v in df.iloc[0].astype(str).items())
+    # Solve the TTR model with distruption
+    df_distrupted  = utils.build_and_solve_ttr(dataset, disrupted, ttr, True)
+    model = df_distrupted["model"].values[0]
+    records_distrupted = []
+    for v in model.component_data_objects(ctype=pyo.Var, active=True):
+        idx  = v.index()
+        record  = {
+            "var_name"  : v.parent_component().name,
+            "index"     : idx,
+            "value"     : pyo.value(v),
+        }
+        records_distrupted.append(record)
+
+    df_distrupted = df_distrupted.drop(["model"], axis=1)
+    df_distrupted["optimized_network_without_disruption"] = str(records_normal)
+    df_distrupted["optimized_network_with_disruption"] = str(records_distrupted)
+
+    # Solve the TTS model under distruption
+    df_tts = utils.build_and_solve_tts(dataset, disrupted, False)
+    df_distrupted["tts"] = df_tts["tts"].values[0]
+    
+    # Convert the resutls to string
+    row_str = ",".join(f"{k}={v}" for k, v in df_distrupted.iloc[0].astype(str).items())
 
     return row_str
 
@@ -173,7 +221,7 @@ class SupplyChainAgent(ChatAgent):
     def _build_agent_from_config(self):
         llm = ChatDatabricks(
             endpoint=self.config.get("endpoint_name"),
-            temperature=self.config.get("temperature"),
+            #temperature=self.config.get("temperature"),
             max_tokens=self.config.get("max_tokens"),
         )
         agent = create_tool_calling_agent(
@@ -197,7 +245,7 @@ class SupplyChainAgent(ChatAgent):
         # Here 'output' is already a ChatAgentResponse, but to make the ChatAgent signature explicit for this demonstration we are returning a new instance
         return ChatAgentResponse(**output)
     
-tools = [ttr_agent_tool]
+tools = [data_access_tool, optimization_tool]
 
 AGENT = SupplyChainAgent(config, tools)
 mlflow.models.set_model(AGENT)
