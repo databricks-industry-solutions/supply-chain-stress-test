@@ -34,7 +34,10 @@ import scripts.utils as utils
 
 mlflow.langchain.autolog()
 
-LLM_ENDPOINT = "ryuta-gpt"
+############################################
+# Define your LLM endpoint and system prompt
+############################################
+LLM_ENDPOINT = "gpt-5"
 
 config = {
     "endpoint_name": LLM_ENDPOINT,
@@ -78,6 +81,12 @@ config = {
     """,
 }
 
+###############################################################################
+## Define tools for your agent, enabling it to retrieve data or take actions
+## beyond text generation
+## To create and see usage examples of more tools, see
+## https://learn.microsoft.com/azure/databricks/generative-ai/agent-framework/agent-tool
+###############################################################################
 @tool
 def data_access_tool(
     catalog: str = config["catalog"],
@@ -152,11 +161,11 @@ def optimization_tool(
     df_distrupted["optimized_network_without_disruption"] = str(records_normal)
     df_distrupted["optimized_network_with_disruption"] = str(records_distrupted)
 
-    # Solve the TTS model under distruption
+    # Solve the TTS model with distruption
     df_tts = utils.build_and_solve_tts(dataset, disrupted, False)
     df_distrupted["tts"] = df_tts["tts"].values[0]
     
-    # Convert the resutls to string
+    # Convert the result to string
     row_str = ",".join(f"{k}={v}" for k, v in df_distrupted.iloc[0].astype(str).items())
 
     return row_str
