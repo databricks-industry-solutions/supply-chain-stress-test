@@ -6,30 +6,13 @@
 
 ## Business Problem
 
-Global disruptions from pandemics, wars, and climate events have exposed vulnerabilities in supply chains—resulting in shortages, cost spikes, and reputational damage. Building resilient supply chains enables companies to maintain service levels, capture market share when competitors falter and protect revenue, margins, and brand credibility during crises.
-
-Stress testing simulates extreme but plausible shocks—such as supplier failures, port closures, or demand surges—to reveal hidden risks and single points of failure. By quantifying the financial impact, organizations can prioritize mitigation strategies, diversify sourcing, build targeted inventory buffers, and implement agile decision rules—strengthening adaptability in the face of uncertainty.
-
-This solution accelerator implements the methodology proposed in a [paper](https://dspace.mit.edu/handle/1721.1/101782), which applies stress testing to supply chain networks using digital twins—virtual models constructed from real operational data. Simulating a wide range of disruption scenarios allows businesses to assess potential impacts, identify vulnerabilities, and make proactive, informed decisions.
-
-At the core of this approach is a linear optimization problem, where we optimize the network configuration toward a common objective subject to a set of constraints. This accelerator uses [Pyomo](https://pyomo.readthedocs.io/en/stable/index.html) and [HiGHS](https://github.com/ERGO-Code/HiGHS) to model and solve the optimization problem, and leverages [Ray](https://docs.databricks.com/aws/en/machine-learning/ray/) to scale the process across thousands of simulations.
-
-Databricks is the ideal platform for building this solution. Key advantages include:
-
-1. **Delta Sharing** – Access to up-to-date operational data is vital for resilient supply chain solutions. Delta Sharing enables seamless data exchange between retailers and suppliers—even if one party isn't using Databricks.
-
-2. **Scalability** – Running linear optimization across networks with thousands of nodes and simulating thousands of disruption scenarios is computationally demanding. Databricks provides horizontal scalability to handle these workloads efficiently.
-
-3. **Open Standards** – Databricks integrates smoothly with open-source and third-party tools, allowing teams to use familiar libraries with minimal friction. This flexibility supports custom modeling of business problems and ensures transparency for auditability, validation, and ongoing refinement.
-
 
 ## Reference Architecture
 
-<img src='images/cartoon.png' width=650>
 
 ## Authors
 
-<ryuta.yoshimatsu@databricks.com>,  <luis.herrera@databricks.com>, <puneet.jain@databricks.com>
+<ryuta.yoshimatsu@databricks.com>, <puneet.jain@databricks.com>
 
 ## Project support 
 
