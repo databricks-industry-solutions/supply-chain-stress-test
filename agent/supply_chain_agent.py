@@ -77,7 +77,7 @@ config = {
     u                     | Total production volume of the node during the ttr.                                                |
     y                     | Allocation of upstream node to downsteam node during the ttr.                                      |
     
-    Report the profit loss during the recovery period. When giving recommendations, compare the optimized network with and without the disruption and base them on differences in the decision variables. Include detailed action plans, a summary of the best actions for this scenario, and precise numbers whenever possible. Finally, the users of this tool are buisness analysts, so keep the language simple and avoid technical terms.
+    Report the profit loss during the recovery period. When giving recommendations, compare the optimized network with and without the disruption and base them on differences in the decision variables. Include detailed action plans, a summary of the best actions for this scenario, and precise numbers whenever possible. Finally, the users of this tool are buisness analysts, so keep the language simple and avoid technical terms. Make sure that the final report has fewer than 500 words.
     """,
 }
 
@@ -131,7 +131,7 @@ def optimization_tool(
     # Get the operational data from Unity Catalog Volume
     dataset = data_access_tool.func()
 
-    # Solve the TTR model without distruption
+    # Solve the TTR model without disruption
     df_normal = utils.build_and_solve_ttr(dataset, [], ttr, True)
     model = df_normal["model"].values[0]
     records_normal = []
