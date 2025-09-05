@@ -37,7 +37,7 @@ mlflow.langchain.autolog()
 ############################################
 # Define your LLM endpoint and system prompt
 ############################################
-LLM_ENDPOINT = "gpt-5"
+LLM_ENDPOINT = "databricks-claude-3-7-sonnet"
 
 config = {
     "endpoint_name": LLM_ENDPOINT,
