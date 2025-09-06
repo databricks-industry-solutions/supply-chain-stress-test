@@ -37,7 +37,7 @@ mlflow.langchain.autolog()
 ############################################
 # Define your LLM endpoint and system prompt
 ############################################
-LLM_ENDPOINT = "databricks-claude-3-7-sonnet"
+LLM_ENDPOINT = "databricks-claude-sonnet-4"
 
 config = {
     "endpoint_name": LLM_ENDPOINT,
@@ -49,9 +49,9 @@ config = {
     "system_prompt": """
     "You are a helpful assistant that answers questions about a supply chain network. Questions outside this topic are considered irrelevant. You use a set of tools to provide answers, and if needed, you ask the user follow up questions to clarify their request. You may need to execute multiple tools in sequence to build up the final answer. When you receive a request, first plan the steps carefully and then execute.
 
-    When interpreting the output of the optimization tool, make use of the following definiiotns of the parameters, decision variables and metric.
+    When interpreting the output of the optimization tool, make use of the following descriptions of the parameters, decision variables and metric.
 
-    - Below are the definitions of the important metrics:
+    - Below are the definitions of the metrics:
     Metrics               | What it represents
     TTR                   | Stands for time to recover. Recovery time for a node or group after a disruption.               |
     TTS                   | Stands for time to survive. TTS indicates how long the network can meet demand with no loss.    |
@@ -88,7 +88,7 @@ config = {
 ## https://learn.microsoft.com/azure/databricks/generative-ai/agent-framework/agent-tool
 ###############################################################################
 @tool
-def data_access_tool(
+def data_analysis_tool(
     catalog: str = config["catalog"],
     database: str = config["database"],
     volume: str = config["volume"],
@@ -129,44 +129,44 @@ def optimization_tool(
     str: A string representation of the optimization results.
     """    
     # Get the operational data from Unity Catalog Volume
-    dataset = data_access_tool.func()
+    dataset = data_analysis_tool.func()
 
     # Solve the TTR model without disruption
-    df_normal = utils.build_and_solve_ttr(dataset, [], ttr, True)
-    model = df_normal["model"].values[0]
-    records_normal = []
-    for v in model.component_data_objects(ctype=pyo.Var, active=True):
+    df_without = utils.build_and_solve_ttr(dataset, [], ttr, True)
+    model_without = df_without["model"].values[0]
+    records_without = []
+    for v in model_without.component_data_objects(ctype=pyo.Var, active=True):
         idx  = v.index()
         record  = {
             "var_name"  : v.parent_component().name,
             "index"     : idx,
             "value"     : pyo.value(v),
         }
-        records_normal.append(record)
+        records_without.append(record)
     
     # Solve the TTR model with distruption
-    df_distrupted  = utils.build_and_solve_ttr(dataset, disrupted, ttr, True)
-    model = df_distrupted["model"].values[0]
-    records_distrupted = []
-    for v in model.component_data_objects(ctype=pyo.Var, active=True):
+    df_with  = utils.build_and_solve_ttr(dataset, disrupted, ttr, True)
+    model_with = df_with["model"].values[0]
+    records_with = []
+    for v in model_with.component_data_objects(ctype=pyo.Var, active=True):
         idx  = v.index()
         record  = {
             "var_name"  : v.parent_component().name,
             "index"     : idx,
             "value"     : pyo.value(v),
         }
-        records_distrupted.append(record)
+        records_with.append(record)
 
-    df_distrupted = df_distrupted.drop(["model"], axis=1)
-    df_distrupted["optimized_network_without_disruption"] = str(records_normal)
-    df_distrupted["optimized_network_with_disruption"] = str(records_distrupted)
+    df = df_with.drop(["model"], axis=1)
+    df["optimized_network_without_disruption"] = str(records_without)
+    df["optimized_network_with_disruption"] = str(records_with)
 
     # Solve the TTS model with distruption
     df_tts = utils.build_and_solve_tts(dataset, disrupted, False)
-    df_distrupted["tts"] = df_tts["tts"].values[0]
+    df["tts"] = df_tts["tts"].values[0]
     
     # Convert the result to string
-    row_str = ",".join(f"{k}={v}" for k, v in df_distrupted.iloc[0].astype(str).items())
+    row_str = ",".join(f"{k}={v}" for k, v in df.iloc[0].astype(str).items())
 
     return row_str
 
@@ -230,7 +230,7 @@ class SupplyChainAgent(ChatAgent):
     def _build_agent_from_config(self):
         llm = ChatDatabricks(
             endpoint=self.config.get("endpoint_name"),
-            #temperature=self.config.get("temperature"),
+            temperature=self.config.get("temperature"),
             max_tokens=self.config.get("max_tokens"),
         )
         agent = create_tool_calling_agent(
@@ -254,7 +254,7 @@ class SupplyChainAgent(ChatAgent):
         # Here 'output' is already a ChatAgentResponse, but to make the ChatAgent signature explicit for this demonstration we are returning a new instance
         return ChatAgentResponse(**output)
     
-tools = [data_access_tool, optimization_tool]
+tools = [data_analysis_tool, optimization_tool]
 
 AGENT = SupplyChainAgent(config, tools)
 mlflow.models.set_model(AGENT)
