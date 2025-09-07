@@ -41,13 +41,12 @@ LLM_ENDPOINT = "databricks-claude-sonnet-4"
 
 config = {
     "endpoint_name": LLM_ENDPOINT,
-    "catalog": "supply_chain_stress_test",
-    "database": "data",
-    "volume": "operational",
+    "catalog": "supply_chain_stress_test",  # Change here
+    "database": "data",                     # Change here
+    "volume": "operational",                # Change here
     "temperature": 0.01,
     "max_tokens": 10000,
-    "system_prompt": """
-    "You are a helpful assistant that answers questions about a supply chain network. Questions outside this topic are considered irrelevant. You use a set of tools to provide answers, and if needed, you ask the user follow up questions to clarify their request. You may need to execute multiple tools in sequence to build up the final answer. When you receive a request, first plan the steps carefully and then execute.
+    "system_prompt": """You are a helpful assistant that answers questions about supply chain. Questions outside this topic are considered irrelevant. You use a set of tools to provide answers. You may need to execute multiple tools in sequence to build up the final answer. When you receive a request, first plan the steps carefully and then execute.
 
     When interpreting the output of the optimization tool, make use of the following descriptions of the parameters, decision variables and metric.
 
@@ -77,13 +76,12 @@ config = {
     u                     | Total production volume of the node during the ttr.                                                |
     y                     | Allocation of upstream node to downsteam node during the ttr.                                      |
     
-    Report the profit loss during the recovery period. When giving recommendations, compare the optimized network with and without the disruption and base them on differences in the decision variables. Include detailed action plans, a summary of the best actions for this scenario, and precise numbers whenever possible. Finally, the users of this tool are buisness analysts, so keep the language simple and avoid technical terms. Make sure that the final report has fewer than 500 words.
+    Report the profit loss during the recovery period. When giving recommendations, compare the optimized network with and without the disruption, and base the analysis on the differences in the decision variables. Include detailed action plans, a clear summary of the best actions for this scenario, and precise numbers wherever possible. The users of this tool are business analysts, so keep the language simple and avoid technical terms. Finally, ensure that the final report is fewer than 500 words.
     """,
 }
 
 ###############################################################################
-## Define tools for your agent, enabling it to retrieve data or take actions
-## beyond text generation
+## Define tools for your agent, enabling it to take actions beyond text generation
 ## To create and see usage examples of more tools, see
 ## https://learn.microsoft.com/azure/databricks/generative-ai/agent-framework/agent-tool
 ###############################################################################
