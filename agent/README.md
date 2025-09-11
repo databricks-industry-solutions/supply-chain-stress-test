@@ -17,6 +17,8 @@ The solution accelerator demonstrates how to build, evaluate and deploy such an 
 
 ## Reference Architecture
 
+<img src='../images/agent-architecture.png' width=650>
+
 ## Authors
 
 <ryuta.yoshimatsu@databricks.com>, <puneet.jain@databricks.com>

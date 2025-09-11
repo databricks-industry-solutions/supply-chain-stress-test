@@ -22,10 +22,14 @@ Databricks is the ideal platform for building this solution. Key advantages incl
 
 3. **Open Standards** – Databricks integrates smoothly with open-source and third-party tools, allowing teams to use familiar libraries with minimal friction. This flexibility supports custom modeling of business problems and ensures transparency for auditability, validation, and ongoing refinement.
 
-
 ## Reference Architecture
 
 <img src='images/cartoon.png' width=650>
+
+## [Vector Lab](https://www.youtube.com/@VectorLab) - Stress Testing Supply Chains with Digital Twins on Databricks
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/yRR_QAm5npw/0.jpg)](https://www.youtube.com/watch?v=yRR_QAm5npw)
+
 
 ## Authors
 
