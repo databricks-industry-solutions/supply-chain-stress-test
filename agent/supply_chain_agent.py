@@ -14,7 +14,7 @@ from langchain_core.language_models import LanguageModelLike
 from langchain_core.runnables import RunnableConfig, RunnableLambda
 from langchain_core.tools import BaseTool, tool
 from langgraph.graph import END, StateGraph
-from langgraph.graph.graph import CompiledGraph
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt.tool_node import ToolNode
 from mlflow.langchain.chat_agent_langgraph import ChatAgentState, ChatAgentToolNode
 from mlflow.models import ModelConfig
@@ -173,7 +173,7 @@ def create_tool_calling_agent(
     model: LanguageModelLike,
     tools: Union[ToolNode, Sequence[BaseTool]],
     agent_prompt: Optional[str] = None,
-) -> CompiledGraph:
+) -> CompiledStateGraph:
     model = model.bind_tools(tools)
 
     def routing_logic(state: ChatAgentState):
