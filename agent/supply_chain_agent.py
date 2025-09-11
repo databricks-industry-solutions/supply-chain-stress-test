@@ -1,4 +1,4 @@
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union, Generator
 import os
 import json
 import mlflow
@@ -20,6 +20,7 @@ from mlflow.langchain.chat_agent_langgraph import ChatAgentState, ChatAgentToolN
 from mlflow.models import ModelConfig
 from mlflow.pyfunc import ChatAgent
 from mlflow.types.agent import (
+    ChatAgentChunk,
     ChatAgentMessage,
     ChatAgentResponse,
     ChatContext,
@@ -251,6 +252,19 @@ class SupplyChainAgent(ChatAgent):
         output = self.agent.invoke(request)
         # Here 'output' is already a ChatAgentResponse, but to make the ChatAgent signature explicit for this demonstration we are returning a new instance
         return ChatAgentResponse(**output)
+    
+    @mlflow.trace(name="SupplyChainAgent", span_type=mlflow.entities.SpanType.AGENT)
+    def predict_stream(
+        self,
+        messages: list[ChatAgentMessage],
+        context: Optional[ChatContext] = None,
+        custom_inputs: Optional[dict[str, Any]] = None) -> Generator[ChatAgentChunk, None, None]:
+        request = {"messages": self._convert_messages_to_dict(messages)}
+        for event in self.agent.stream(request, stream_mode="updates"):
+            for node_data in event.values():
+                yield from (
+                    ChatAgentChunk(**{"delta": msg}) for msg in node_data["messages"]
+                )
     
 tools = [data_analysis_tool, optimization_tool]
 
