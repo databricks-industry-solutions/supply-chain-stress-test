@@ -3,16 +3,95 @@ import time
 from typing import AsyncGenerator, Optional, Dict
 from fastapi.responses import StreamingResponse
 import httpx
-from utils.models import MessageResponse
-from utils import *
-from utils.data_utils import create_response_data
+from .models import MessageResponse
+from .data_utils import create_response_data
 import logging
 import uuid
-from utils.request_handler import RequestHandler
+from .request_handler import RequestHandler
 from datetime import datetime
-from utils.config import SERVING_ENDPOINT_NAME
+from .config import SERVING_ENDPOINT_NAME
 logger = logging.getLogger(__name__)
 class StreamingHandler:
+
+    @staticmethod
+    def _format_tool_call(tool_call):
+        """Helper method to format tool calls consistently"""
+        tool_name = tool_call.get('function', {}).get('name', 'unknown_tool')
+        tool_args = tool_call.get('function', {}).get('arguments', '{}')
+        
+        try:
+            args_dict = json.loads(tool_args) if tool_args != '{}' else {}
+            if args_dict:
+                formatted_args = json.dumps(args_dict, indent=2, ensure_ascii=False)
+                tool_content = f"\n\n<!-- TOOL_START -->\n🔧 Using tool: {tool_name}\n\nTool: {tool_name}\nArguments:\n{formatted_args}\n<!-- TOOL_END -->\n"
+            else:
+                tool_content = f"\n\n<!-- TOOL_START -->\n🔧 Using tool: {tool_name}\n\nTool: {tool_name}\nArguments: (none)\n<!-- TOOL_END -->\n"
+        except Exception:
+            tool_content = f"\n\n<!-- TOOL_START -->\n🔧 Using tool: {tool_name}\n\nTool: {tool_name}\nArguments: {tool_args}\n<!-- TOOL_END -->\n"
+        
+        return tool_content
+
+    @staticmethod
+    def _format_tool_response(tool_response_content):
+        """Helper method to format tool responses consistently"""
+        try:
+            # First try to parse as JSON
+            parsed_content = json.loads(tool_response_content)
+            formatted_content = json.dumps(parsed_content, indent=2, ensure_ascii=False)
+            tool_response = f"\n\n<!-- TOOL_RESPONSE_START -->\n🔧 Tool response:\n\n{formatted_content}\n<!-- TOOL_RESPONSE_END -->\n"
+        except (json.JSONDecodeError, TypeError):
+            try:
+                # Try to evaluate as Python literal
+                import ast
+                parsed_content = ast.literal_eval(tool_response_content)
+                formatted_content = json.dumps(parsed_content, indent=2, ensure_ascii=False)
+                tool_response = f"\n\n<!-- TOOL_RESPONSE_START -->\n🔧 Tool response:\n\n{formatted_content}\n<!-- TOOL_RESPONSE_END -->\n"
+            except (ValueError, SyntaxError):
+                try:
+                    # Try to parse as key=value pairs
+                    pairs = tool_response_content.split(',')
+                    result = {}
+                    current_key = None
+                    current_value = ""
+                    in_list = False
+                    bracket_count = 0
+                    
+                    for pair in pairs:
+                        pair = pair.strip()
+                        if '=' in pair and not in_list:
+                            if current_key:
+                                try:
+                                    result[current_key] = ast.literal_eval(current_value.strip())
+                                except:
+                                    result[current_key] = current_value.strip()
+                            
+                            key, value = pair.split('=', 1)
+                            current_key = key.strip()
+                            current_value = value
+                            
+                            if '[' in current_value:
+                                in_list = True
+                                bracket_count = current_value.count('[') - current_value.count(']')
+                        else:
+                            current_value += ',' + pair
+                            if in_list:
+                                bracket_count += pair.count('[') - pair.count(']')
+                                if bracket_count <= 0:
+                                    in_list = False
+                    
+                    if current_key:
+                        try:
+                            result[current_key] = ast.literal_eval(current_value.strip())
+                        except:
+                            result[current_key] = current_value.strip()
+                    
+                    formatted_content = json.dumps(result, indent=2, ensure_ascii=False)
+                    tool_response = f"\n\n<!-- TOOL_RESPONSE_START -->\n🔧 Tool response:\n\n{formatted_content}\n<!-- TOOL_RESPONSE_END -->\n"
+                except Exception:
+                    # Final fallback: use original content
+                    tool_response = f"\n\n<!-- TOOL_RESPONSE_START -->\n🔧 Tool response:\n\n{tool_response_content}\n<!-- TOOL_RESPONSE_END -->\n"
+        
+        return tool_response
 
     @staticmethod
     async def handle_streaming_response(
@@ -59,34 +138,31 @@ class StreamingHandler:
                             # Capture tool calls if present
                             if 'tool_calls' in delta:
                                 accumulated_tool_calls.extend(delta['tool_calls'])
-                                print(f"Tool calls captured (choices): {len(delta['tool_calls'])} calls")
                             
                             # Always add content to accumulated_content
                             if content:
                                 accumulated_content += content
-                                print(f"Added choices content: {len(content)} chars, total: {len(accumulated_content)}")
                             
                             # Extract sources and trace_id using the request_handler method
                             if 'databricks_output' in data or 'trace' in data or 'trace_id' in data:
                                 sources, trace_id = await request_handler.extract_sources_from_trace(data)
                             
                             # Stream all content immediately (always stream, even if no new content to show updates)
-                            response_data = create_response_data(
-                                message_id,
+                                response_data = create_response_data(
+                                    message_id,
                                 accumulated_content,  # Stream full accumulated content
-                                sources,
-                                ttft if first_token_time is not None else None,
-                                time.time() - start_time,
-                                original_timestamp,
-                                trace_id,
-                                accumulated_tool_calls if accumulated_tool_calls else None
-                            )
-                            yield f"data: {json.dumps(response_data)}\n\n"
+                                    sources,
+                                    ttft if first_token_time is not None else None,
+                                    time.time() - start_time,
+                                    original_timestamp,
+                                    trace_id,
+                                    accumulated_tool_calls if accumulated_tool_calls else None
+                                )
+                                yield f"data: {json.dumps(response_data)}\n\n"
                         elif "delta" in data:
                             # Check for trace information in delta responses as well
                             if 'databricks_output' in data or 'trace' in data or 'trace_id' in data:
                                 new_sources, new_trace_id = await request_handler.extract_sources_from_trace(data)
-                                print(f"New sources: {new_sources}, New trace_id: {new_trace_id}")
                                 if new_sources:
                                     sources = new_sources
                                 if new_trace_id:
@@ -96,28 +172,11 @@ class StreamingHandler:
                             if delta["role"] == "assistant" and "tool_calls" in delta:
                                 # Capture tool calls
                                 accumulated_tool_calls.extend(delta['tool_calls'])
-                                print(f"Tool calls captured (delta): {len(delta['tool_calls'])} calls")
                                 
                                 # Add tool call content to accumulated_content for single response
                                 for tool_call in delta['tool_calls']:
-                                    tool_name = tool_call.get('function', {}).get('name', 'unknown_tool')
-                                    tool_args = tool_call.get('function', {}).get('arguments', '{}')
-                                    
-                                    # Format tool call for inclusion in content with clear delimiters
-                                    try:
-                                        args_dict = json.loads(tool_args) if tool_args != '{}' else {}
-                                        if args_dict:
-                                            # Pretty print arguments as JSON
-                                            formatted_args = json.dumps(args_dict, indent=2, ensure_ascii=False)
-                                            tool_content = f"\n\n<!-- TOOL_START -->\n🔧 Using tool: {tool_name}\n\nTool: {tool_name}\nArguments:\n{formatted_args}\n<!-- TOOL_END -->\n"
-                                        else:
-                                            tool_content = f"\n\n<!-- TOOL_START -->\n🔧 Using tool: {tool_name}\n\nTool: {tool_name}\nArguments: (none)\n<!-- TOOL_END -->\n"
-                                    except Exception as e:
-                                        print(f"Error parsing tool args: {e}")
-                                        tool_content = f"\n\n<!-- TOOL_START -->\n🔧 Using tool: {tool_name}\n\nTool: {tool_name}\nArguments: {tool_args}\n<!-- TOOL_END -->\n"
-                                    
+                                    tool_content = StreamingHandler._format_tool_call(tool_call)
                                     accumulated_content += tool_content
-                                    print(f"Added tool call to content: {tool_name}")
                                 
                                 # Add any additional content from the delta
                                 if delta.get("content"):
@@ -140,74 +199,8 @@ class StreamingHandler:
                                 # Capture tool response and add to content
                                 if delta.get("content"):
                                     accumulated_tool_responses.append(delta["content"])
-                                    print(f"Tool response captured: {len(delta['content'])} characters")
-                                    
-                                    # Try to parse and pretty-print JSON content
-                                    try:
-                                        # First try to parse as JSON
-                                        parsed_content = json.loads(delta['content'])
-                                        formatted_content = json.dumps(parsed_content, indent=2, ensure_ascii=False)
-                                        tool_response_content = f"\n\n<!-- TOOL_RESPONSE_START -->\n🔧 Tool response:\n\n{formatted_content}\n<!-- TOOL_RESPONSE_END -->\n"
-                                    except (json.JSONDecodeError, TypeError):
-                                        try:
-                                            # Try to evaluate as Python literal (for dict/list syntax)
-                                            import ast
-                                            parsed_content = ast.literal_eval(delta['content'])
-                                            formatted_content = json.dumps(parsed_content, indent=2, ensure_ascii=False)
-                                            tool_response_content = f"\n\n<!-- TOOL_RESPONSE_START -->\n🔧 Tool response:\n\n{formatted_content}\n<!-- TOOL_RESPONSE_END -->\n"
-                                        except (ValueError, SyntaxError):
-                                            # If neither works, try to parse as key=value pairs and convert to JSON
-                                            try:
-                                                # Split by comma and parse key=value pairs
-                                                pairs = delta['content'].split(',')
-                                                result = {}
-                                                current_key = None
-                                                current_value = ""
-                                                in_list = False
-                                                bracket_count = 0
-                                                
-                                                for pair in pairs:
-                                                    pair = pair.strip()
-                                                    if '=' in pair and not in_list:
-                                                        if current_key:
-                                                            # Process previous key-value
-                                                            try:
-                                                                result[current_key] = ast.literal_eval(current_value.strip())
-                                                            except:
-                                                                result[current_key] = current_value.strip()
-                                                        
-                                                        # Start new key-value
-                                                        key, value = pair.split('=', 1)
-                                                        current_key = key.strip()
-                                                        current_value = value
-                                                        
-                                                        # Check if we're starting a list
-                                                        if '[' in current_value:
-                                                            in_list = True
-                                                            bracket_count = current_value.count('[') - current_value.count(']')
-                                                    else:
-                                                        # Continue building current value
-                                                        current_value += ',' + pair
-                                                        if in_list:
-                                                            bracket_count += pair.count('[') - pair.count(']')
-                                                            if bracket_count <= 0:
-                                                                in_list = False
-                                                
-                                                # Process final key-value
-                                                if current_key:
-                                                    try:
-                                                        result[current_key] = ast.literal_eval(current_value.strip())
-                                                    except:
-                                                        result[current_key] = current_value.strip()
-                                                
-                                                formatted_content = json.dumps(result, indent=2, ensure_ascii=False)
-                                                tool_response_content = f"\n\n<!-- TOOL_RESPONSE_START -->\n🔧 Tool response:\n\n{formatted_content}\n<!-- TOOL_RESPONSE_END -->\n"
-                                            except Exception:
-                                                # Final fallback: use original content
-                                                tool_response_content = f"\n\n<!-- TOOL_RESPONSE_START -->\n🔧 Tool response:\n\n{delta['content']}\n<!-- TOOL_RESPONSE_END -->\n"
-                                    
+                                    tool_response_content = StreamingHandler._format_tool_response(delta['content'])
                                     accumulated_content += tool_response_content
-                                    print(f"Added tool response to content")
                                     
                                     # Stream updated content with tool response
                                     response_data = create_response_data(
@@ -228,7 +221,6 @@ class StreamingHandler:
                                 
                                 # Always append to accumulated_content for single response
                                 accumulated_content += content
-                                print(f"Added regular content: {len(content)} chars, total: {len(accumulated_content)}")
                                 
                                 # Stream updated content
                                 response_data = create_response_data(
@@ -241,7 +233,7 @@ class StreamingHandler:
                                     trace_id,  # Pass the extracted trace_id
                                     accumulated_tool_calls if accumulated_tool_calls else None
                                 )
-                                yield f"data: {json.dumps(response_data)}\n\n"    
+                                yield f"data: {json.dumps(response_data)}\n\n" 
                     except json.JSONDecodeError:
                         continue
             if update_flag:
@@ -278,9 +270,6 @@ class StreamingHandler:
                 }
 
             # Debug: Print accumulated content length
-            print(f"Final response - accumulated_content length: {len(accumulated_content)}")
-            print(f"Final response - tool_calls count: {len(accumulated_tool_calls) if accumulated_tool_calls else 0}")
-            print(f"Final response - tool_responses count: {len(accumulated_tool_responses) if accumulated_tool_responses else 0}")
             
             # Only yield the final done event, not duplicate content
             yield "event: done\ndata: {}\n\n"
@@ -299,29 +288,91 @@ class StreamingHandler:
         user_info: Dict,
         message_handler
     ) -> AsyncGenerator[str, None]:
-        """Handle non-streaming response from the model."""
+        """Handle non-streaming response from the model with tool call and response formatting."""
         try:
             start_time = time.time()
             response = await request_handler.enqueue_request(url, headers, request_data)
-            response_data = await request_handler.handle_databricks_response(response, start_time)
+            response_json = response.json()
             
+            # Process the response to format tool calls and responses like streaming
+            accumulated_content = ""
+            tool_calls = []
+            sources = []
+            trace_id = None
+            
+            # Extract sources and trace_id
+            sources, trace_id = await request_handler.extract_sources_from_trace(response_json)
+            
+            # Process different response formats
+            if 'choices' in response_json and len(response_json['choices']) > 0:
+                choice = response_json['choices'][0]
+                message = choice.get('message', {})
+                
+                # Add initial content
+                if message.get('content'):
+                    accumulated_content += message['content']
+                
+                # Process tool calls - check both direct tool_calls and finish_reason
+                if message.get('tool_calls'):
+                    tool_calls.extend(message['tool_calls'])
+                    for tool_call in message['tool_calls']:
+                        tool_content = StreamingHandler._format_tool_call(tool_call)
+                        accumulated_content += tool_content
+                
+                # Check if this is a tool call request (finish_reason = 'tool_calls')
+                elif choice.get('finish_reason') == 'tool_calls':
+                    # Try to find tool calls in other locations
+                    if 'tool_calls' in choice:
+                        tool_calls.extend(choice['tool_calls'])
+                        for tool_call in choice['tool_calls']:
+                            tool_content = StreamingHandler._format_tool_call(tool_call)
+                            accumulated_content += tool_content
+                
+                print(f"Final choice processing - finish_reason: {choice.get('finish_reason')}, tool_calls found: {len(tool_calls)}")
+            
+            elif 'messages' in response_json:
+                # Handle messages format
+                for msg in response_json['messages']:
+                    if msg.get('role') == 'assistant':
+                        # Check for content
+                        if msg.get('content'):
+                            accumulated_content += msg['content']
+                        
+                        # Check for tool calls
+                        if msg.get('tool_calls'):
+                            tool_calls.extend(msg['tool_calls'])
+                            for tool_call in msg['tool_calls']:
+                                tool_content = StreamingHandler._format_tool_call(tool_call)
+                                accumulated_content += tool_content
+                        
+                    elif msg.get('role') == 'tool' and msg.get('content'):
+                        # Format tool response with same structure as streaming
+                        tool_response_content = msg['content']
+                        tool_response = StreamingHandler._format_tool_response(tool_response_content)
+                        accumulated_content += tool_response
+            
+            # Ensure we have some content to return
+            if not accumulated_content and not tool_calls:
+                accumulated_content = "I'm ready to help you with your supply chain analysis. What would you like to know?"
+            
+            # Create the assistant message with processed content
             assistant_message = message_handler.create_message(
                 message_id=str(uuid.uuid4()),
-                content=response_data["content"],
+                content=accumulated_content,
                 role="assistant",
                 session_id=session_id,
                 user_id=user_id,
                 user_info=user_info,
-                sources=response_data.get("sources"),
-                metrics=response_data.get("metrics"),
-                trace_id=response_data.get("trace_id"),
-                tool_calls=response_data.get("tool_calls")
+                sources=sources,
+                metrics={'totalTime': time.time() - start_time},
+                trace_id=trace_id,
+                tool_calls=tool_calls if tool_calls else None
             )
             
             yield f"data: {assistant_message.model_dump_json()}\n\n"
             yield "event: done\ndata: {}\n\n"
         except Exception as e:
-            logger.error(f"Error in non-streami ng response: {str(e)}")
+            logger.error(f"Error in non-streaming response: {str(e)}")
             error_message = message_handler.create_error_message(
                 session_id=session_id,
                 user_id=user_id,

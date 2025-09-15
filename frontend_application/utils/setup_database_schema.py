@@ -39,7 +39,7 @@ def get_database_connection(use_sp=True):
 
 def setup_schema():
     """Set up the schema with proper roles and permissions"""
-    engine = get_database_connection(use_sp=False)
+    engine = get_database_connection(use_sp=True)
     if not engine:
         return False
     

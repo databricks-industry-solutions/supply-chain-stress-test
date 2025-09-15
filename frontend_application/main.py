@@ -17,15 +17,15 @@ import asyncio
 import mlflow
 import mlflow.entities
 
-from utils.chat_database import ChatDatabase
+from frontend_application.utils.chat_database import ChatDatabase
 from collections import defaultdict
 from contextlib import asynccontextmanager
-from utils.models import MessageRequest, MessageResponse, ChatHistoryItem, ChatHistoryResponse, CreateChatRequest, RegenerateRequest, FeedbackRequest, FeedbackResponse
-from utils.config import SERVING_ENDPOINT_NAME, DATABRICKS_HOST, MLFLOW_EXPERIMENT_ID
-from utils import *
-from utils.logging_handler import with_logging
-from utils.app_state import app_state
-from utils.dependencies import (
+from frontend_application.utils.models import MessageRequest, MessageResponse, ChatHistoryItem, ChatHistoryResponse, CreateChatRequest, RegenerateRequest, FeedbackRequest, FeedbackResponse
+from frontend_application.utils.config import SERVING_ENDPOINT_NAME, DATABRICKS_HOST, MLFLOW_EXPERIMENT_ID
+from frontend_application.utils import *
+from frontend_application.utils.logging_handler import with_logging
+from frontend_application.utils.app_state import app_state
+from frontend_application.utils.dependencies import (
     get_chat_db,
     get_chat_history_cache,
     get_message_handler,
@@ -35,7 +35,7 @@ from utils.dependencies import (
     get_request_queue,
     get_streaming_support_cache
 )
-from utils.data_classes import StreamingContext, RequestContext, HandlerContext
+from frontend_application.utils.data_classes import StreamingContext, RequestContext, HandlerContext
 
 # Configure logging
 logging.basicConfig(
@@ -99,7 +99,7 @@ class SPAStaticFiles(StaticFiles):
 api_app = FastAPI()
 
 # Check if frontend build directory exists
-frontend_dir = "frontend/build-chat-app"
+frontend_dir = "frontend_application/frontend/build-chat-app"
 static_dir = os.path.join(frontend_dir, "static")
 
 if not os.path.exists(frontend_dir):

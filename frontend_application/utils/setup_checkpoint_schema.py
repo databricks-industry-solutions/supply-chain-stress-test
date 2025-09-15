@@ -51,7 +51,7 @@ def get_database_connection(use_sp=True):
 
 def setup_checkpoint_schema():
     """Set up the checkpoint schema with LangGraph tables"""
-    engine = get_database_connection(use_sp=False)
+    engine = get_database_connection(use_sp=True)
     if not engine:
         return False
     

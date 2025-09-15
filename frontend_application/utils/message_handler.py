@@ -1,8 +1,8 @@
 from datetime import datetime
 import uuid
 from typing import Dict, Optional
-from utils.models import MessageResponse
-from utils.chat_database import ChatDatabase
+from .models import MessageResponse
+from .chat_database import ChatDatabase
 from .chat_history_cache import ChatHistoryCache
 from .config import SERVING_ENDPOINT_NAME
 

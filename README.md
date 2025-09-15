@@ -26,6 +26,16 @@ Databricks is the ideal platform for building this solution. Key advantages incl
 
 <img src='images/cartoon.png' width=650>
 
+## 🚀 Getting Started
+
+For detailed step-by-step instructions on setting up and running the frontend UI integration, please see **[RUNME.md](./RUNME.md)** which provides:
+
+- Complete environment setup guide
+- Databricks credentials configuration
+- Frontend build and deployment instructions
+- Database schema setup
+- Troubleshooting and maintenance tips
+
 ## [Vector Lab](https://www.youtube.com/@VectorLab) - Stress Testing Supply Chains with Digital Twins on Databricks
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/yRR_QAm5npw/0.jpg)](https://www.youtube.com/watch?v=yRR_QAm5npw)
