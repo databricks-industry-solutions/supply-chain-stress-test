@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Optional
 from fastapi import HTTPException
 import logging
-from utils.models import MessageResponse, ChatHistoryItem, ChatHistoryResponse
+from .models import MessageResponse, ChatHistoryItem, ChatHistoryResponse
 
 # Import SQLAlchemy components
 from sqlalchemy import create_engine, Column, String, Text, Integer, DateTime, ForeignKey, CheckConstraint, text
@@ -230,7 +230,8 @@ class ChatDatabase:
                 return self.async_session()
             except Exception as e:
                 if ("password authentication failed" in str(e).lower() or 
-                    "invalid authorization for databricks identity login" in str(e).lower()) and attempt < max_retries - 1:
+                    "invalid authorization for databricks identity login" in str(e).lower() or
+                    "ssl connection has been closed unexpectedly" in str(e).lower()) and attempt < max_retries - 1:
                     logger.warning(f"Async database authentication failed (attempt {attempt + 1}/{max_retries}), regenerating token...")
                     await self._recreate_async_engine_with_fresh_token()
                     continue
@@ -447,7 +448,8 @@ class ChatDatabase:
                 return self.SessionLocal()
             except Exception as e:
                 if ("password authentication failed" in str(e).lower() or 
-                    "invalid authorization for databricks identity login" in str(e).lower()) and attempt < max_retries - 1:
+                    "invalid authorization for databricks identity login" in str(e).lower() or
+                    "ssl connection has been closed unexpectedly" in str(e).lower()) and attempt < max_retries - 1:
                     logger.warning(f"Database authentication failed (attempt {attempt + 1}/{max_retries}), regenerating token...")
                     # Dispose old engine and create new one with fresh token
                     if hasattr(self, 'engine') and self.engine:
@@ -471,7 +473,8 @@ class ChatDatabase:
                 if db:
                     db.close()
                 if ("password authentication failed" in str(e).lower() or 
-                    "invalid authorization for databricks identity login" in str(e).lower()) and attempt < max_retries - 1:
+                    "invalid authorization for databricks identity login" in str(e).lower() or
+                    "ssl connection has been closed unexpectedly" in str(e).lower()) and attempt < max_retries - 1:
                     logger.warning(f"{operation_name} failed due to auth (attempt {attempt + 1}/{max_retries}), regenerating token...")
                     # Dispose old engine and create new one with fresh token
                     if hasattr(self, 'engine') and self.engine:

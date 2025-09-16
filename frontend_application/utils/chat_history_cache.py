@@ -2,8 +2,8 @@ from typing import Dict, List
 from collections import defaultdict
 import threading
 from datetime import datetime
-from utils.models import MessageResponse, ChatHistoryItem
-from utils.chat_database import ChatDatabase
+from .models import MessageResponse, ChatHistoryItem
+from .chat_database import ChatDatabase
 class ChatHistoryCache:
     """In-memory cache for chat history"""
     def __init__(self, chat_db: ChatDatabase):

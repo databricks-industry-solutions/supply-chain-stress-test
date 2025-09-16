@@ -3,12 +3,12 @@ from datetime import datetime
 import copy
 import os
 import logging
-from utils.chat_database import ChatDatabase
-from utils.chat_history_cache import ChatHistoryCache
+from .chat_database import ChatDatabase
+from .chat_history_cache import ChatHistoryCache
 from fastapi import Request, Header, Depends, HTTPException
 from datetime import timedelta
 from databricks.sdk import WorkspaceClient
-from utils.models import MessageResponse
+from .models import MessageResponse
 
 logger = logging.getLogger(__name__)
 

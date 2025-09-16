@@ -82,7 +82,7 @@ update_app_yaml() {
     cat > "$temp_yaml" << 'EOF'
 command:
   - "gunicorn"
-  - "main:app"
+  - "frontend_application.main:app"
   - "-w"
   - "2"
   - "--worker-class"
@@ -175,7 +175,7 @@ update_app_yaml
 # Frontend build
 echo "Installing frontend dependencies..."
 (
-  cd frontend
+  cd frontend_application/frontend
   npm install
 ) &
 
@@ -189,14 +189,14 @@ wait
 # Build frontend (must complete before sync)
 echo "Building frontend..."
 (
-  cd frontend
+  cd frontend_application/frontend
   npm run build
 )
 echo "Frontend build complete - output in frontend/build-chat-app"
 
 # Sync application directory to workspace (excluding dot files, .pyc files, __pycache__, and node_modules)
 echo "Syncing application directory to workspace..."
-databricks sync --exclude ".git*" --exclude ".env*" --exclude "*.ipynb" --exclude ".vscode*" --exclude ".databricks*" --exclude "*.pyc" --exclude "__pycache__" --exclude "node_modules"  --exclude ".venv" --exclude "frontend/node_modules" . "$APP_FOLDER_IN_WORKSPACE"
+databricks sync --exclude ".git*" --exclude ".env*" --exclude "*.ipynb" --exclude ".vscode*" --exclude ".databricks*" --exclude "*.pyc" --exclude "__pycache__" --exclude "node_modules"  --exclude ".venv" --exclude "frontend_application/frontend/node_modules" . "$APP_FOLDER_IN_WORKSPACE"
 
 # Deploy the application using the newer CLI directly
 echo "Deploying application from workspace path..."

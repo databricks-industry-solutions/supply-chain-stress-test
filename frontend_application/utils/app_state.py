@@ -1,6 +1,6 @@
 from typing import Optional
 from fastapi import FastAPI
-from utils.chat_database import ChatDatabase
+from .chat_database import ChatDatabase
 from .chat_history_cache import ChatHistoryCache
 from .message_handler import MessageHandler
 from .streaming_handler import StreamingHandler

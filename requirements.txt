@@ -8,6 +8,7 @@ aiohttp==3.12.15
     # via
     #   aiohttp-retry
     #   langchain-community
+    #   litellm
     #   unitycatalog-client
 aiohttp-retry==2.9.1
     # via unitycatalog-client
@@ -26,8 +27,11 @@ anyio==3.7.1
 asyncpg==0.30.0
     # via ka-chat-bot (pyproject.toml)
 attrs==25.3.0
-    # via aiohttp
-azure-core==1.35.0
+    # via
+    #   aiohttp
+    #   jsonschema
+    #   referencing
+azure-core==1.35.1
     # via
     #   azure-storage-blob
     #   azure-storage-file-datalake
@@ -39,11 +43,11 @@ backoff==2.2.1
     # via ka-chat-bot (pyproject.toml)
 blinker==1.9.0
     # via flask
-boto3==1.40.22
+boto3==1.40.30
     # via
     #   databricks-agents
     #   mlflow
-botocore==1.40.22
+botocore==1.40.30
     # via
     #   boto3
     #   databricks-agents
@@ -59,13 +63,14 @@ certifi==2025.8.3
     #   httpcore
     #   httpx
     #   requests
-cffi==1.17.1
+cffi==2.0.0
     # via cryptography
 charset-normalizer==3.4.3
     # via requests
 click==8.2.1
     # via
     #   flask
+    #   litellm
     #   mlflow-skinny
     #   uvicorn
 cloudpickle==3.1.1
@@ -80,7 +85,7 @@ cryptography==45.0.7
     #   mlflow
 cycler==0.12.1
     # via matplotlib
-databricks-agents==1.4.0
+databricks-agents==1.5.0
     # via mlflow
 databricks-ai-bridge==0.7.1
     # via databricks-langchain
@@ -100,7 +105,7 @@ databricks-sdk==0.62.0
     #   mlflow-skinny
     #   mlflow-tracing
     #   unitycatalog-ai
-databricks-vectorsearch==0.57
+databricks-vectorsearch==0.59
     # via databricks-langchain
 dataclasses-json==0.6.7
     # via
@@ -116,6 +121,8 @@ fastapi==0.104.1
     # via
     #   ka-chat-bot (pyproject.toml)
     #   mlflow-skinny
+filelock==3.19.1
+    # via huggingface-hub
 flask==3.1.2
     # via mlflow
 fonttools==4.59.2
@@ -124,6 +131,8 @@ frozenlist==1.7.0
     # via
     #   aiohttp
     #   aiosignal
+fsspec==2025.9.0
+    # via huggingface-hub
 gitdb==4.0.12
     # via gitpython
 gitpython==3.1.45
@@ -140,7 +149,7 @@ google-auth==2.40.3
     #   google-cloud-storage
 google-cloud-core==2.4.3
     # via google-cloud-storage
-google-cloud-storage==3.3.1
+google-cloud-storage==3.4.0
     # via mlflow
 google-crc32c==1.7.1
     # via
@@ -167,7 +176,7 @@ grpcio==1.74.0
     # via
     #   databricks-connect
     #   grpcio-status
-grpcio-status==1.71.2
+grpcio-status==1.74.0
     # via databricks-connect
 gunicorn==23.0.0
     # via
@@ -177,6 +186,8 @@ h11==0.16.0
     # via
     #   httpcore
     #   uvicorn
+hf-xet==1.1.10
+    # via huggingface-hub
 highspy==1.10.0
     # via ka-chat-bot (pyproject.toml)
 httpcore==1.0.9
@@ -187,9 +198,12 @@ httpx==0.25.2
     #   databricks-sdk
     #   langgraph-sdk
     #   langsmith
+    #   litellm
     #   openai
 httpx-sse==0.4.1
     # via langchain-community
+huggingface-hub==0.34.4
+    # via tokenizers
 idna==3.10
     # via
     #   anyio
@@ -198,6 +212,7 @@ idna==3.10
     #   yarl
 importlib-metadata==8.7.0
     # via
+    #   litellm
     #   mlflow-skinny
     #   opentelemetry-api
 isodate==0.7.2
@@ -210,7 +225,8 @@ jinja2==3.1.6
     # via
     #   databricks-agents
     #   flask
-jiter==0.10.0
+    #   litellm
+jiter==0.11.0
     # via openai
 jmespath==1.0.1
     # via
@@ -222,6 +238,10 @@ jsonpatch==1.33
     # via langchain-core
 jsonpointer==3.0.0
     # via jsonpatch
+jsonschema==4.25.1
+    # via litellm
+jsonschema-specifications==2025.9.1
+    # via jsonschema
 kiwisolver==1.4.9
     # via matplotlib
 langchain==0.3.27
@@ -234,7 +254,7 @@ langchain-community==0.3.29
     # via
     #   ka-chat-bot (pyproject.toml)
     #   unitycatalog-langchain
-langchain-core==0.3.75
+langchain-core==0.3.76
     # via
     #   langchain
     #   langchain-community
@@ -243,7 +263,7 @@ langchain-core==0.3.75
     #   langgraph
     #   langgraph-checkpoint
     #   langgraph-prebuilt
-langchain-openai==0.3.32
+langchain-openai==0.3.33
     # via
     #   ka-chat-bot (pyproject.toml)
     #   databricks-sdk
@@ -260,13 +280,15 @@ langgraph-checkpoint-postgres==2.0.23
     # via ka-chat-bot (pyproject.toml)
 langgraph-prebuilt==0.6.4
     # via langgraph
-langgraph-sdk==0.2.5
+langgraph-sdk==0.2.6
     # via langgraph
-langsmith==0.4.23
+langsmith==0.4.27
     # via
     #   langchain
     #   langchain-community
     #   langchain-core
+litellm==1.75.9
+    # via databricks-agents
 mako==1.3.10
     # via alembic
 markupsafe==3.0.2
@@ -310,22 +332,23 @@ numpy==1.26.4
     #   pandas
     #   scikit-learn
     #   scipy
-openai==1.104.2
+openai==1.107.2
     # via
     #   databricks-langchain
     #   databricks-sdk
     #   langchain-openai
-opentelemetry-api==1.36.0
+    #   litellm
+opentelemetry-api==1.37.0
     # via
     #   mlflow-skinny
     #   mlflow-tracing
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
-opentelemetry-sdk==1.36.0
+opentelemetry-sdk==1.37.0
     # via
     #   mlflow-skinny
     #   mlflow-tracing
-opentelemetry-semantic-conventions==0.57b0
+opentelemetry-semantic-conventions==0.58b0
     # via opentelemetry-sdk
 orjson==3.11.3
     # via
@@ -339,6 +362,7 @@ packaging==25.0
     #   databricks-connect
     #   deprecation
     #   gunicorn
+    #   huggingface-hub
     #   langchain-core
     #   langsmith
     #   marshmallow
@@ -361,7 +385,7 @@ propcache==0.3.2
     #   yarl
 proto-plus==1.26.1
     # via google-api-core
-protobuf==5.29.5
+protobuf==6.32.1
     # via
     #   databricks-vectorsearch
     #   google-api-core
@@ -394,9 +418,9 @@ pyasn1==0.6.1
     #   rsa
 pyasn1-modules==0.4.2
     # via google-auth
-pycparser==2.22
+pycparser==2.23
     # via cffi
-pydantic==2.11.7
+pydantic==2.11.9
     # via
     #   ka-chat-bot (pyproject.toml)
     #   databricks-agents
@@ -407,6 +431,7 @@ pydantic==2.11.7
     #   langchain-core
     #   langgraph
     #   langsmith
+    #   litellm
     #   mlflow-skinny
     #   mlflow-tracing
     #   openai
@@ -419,7 +444,7 @@ pydantic-settings==2.10.1
     # via langchain-community
 pyomo==6.9.2
     # via ka-chat-bot (pyproject.toml)
-pyparsing==3.2.3
+pyparsing==3.2.4
     # via matplotlib
 python-dateutil==2.9.0.post0
     # via
@@ -431,15 +456,21 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.0.0
     # via
     #   ka-chat-bot (pyproject.toml)
+    #   litellm
     #   pydantic-settings
 pytz==2025.2
     # via pandas
 pyyaml==6.0.2
     # via
+    #   huggingface-hub
     #   langchain
     #   langchain-community
     #   langchain-core
     #   mlflow-skinny
+referencing==0.36.2
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
 regex==2025.9.1
     # via tiktoken
 requests==2.32.5
@@ -450,6 +481,7 @@ requests==2.32.5
     #   docker
     #   google-api-core
     #   google-cloud-storage
+    #   huggingface-hub
     #   langchain
     #   langchain-community
     #   langsmith
@@ -458,13 +490,17 @@ requests==2.32.5
     #   tiktoken
 requests-toolbelt==1.0.0
     # via langsmith
+rpds-py==0.27.1
+    # via
+    #   jsonschema
+    #   referencing
 rsa==4.9.1
     # via google-auth
-s3transfer==0.13.1
+s3transfer==0.14.0
     # via boto3
-scikit-learn==1.7.1
+scikit-learn==1.7.2
     # via mlflow
-scipy==1.16.1
+scipy==1.16.2
     # via
     #   mlflow
     #   scikit-learn
@@ -507,9 +543,13 @@ tiktoken==0.11.0
     #   databricks-agents
     #   databricks-ai-bridge
     #   langchain-openai
+    #   litellm
+tokenizers==0.22.0
+    # via litellm
 tqdm==4.67.1
     # via
     #   databricks-agents
+    #   huggingface-hub
     #   openai
 typing-extensions==4.15.0
     # via
@@ -521,6 +561,7 @@ typing-extensions==4.15.0
     #   databricks-ai-bridge
     #   fastapi
     #   graphene
+    #   huggingface-hub
     #   langchain-core
     #   mlflow-skinny
     #   openai
@@ -531,6 +572,7 @@ typing-extensions==4.15.0
     #   psycopg-pool
     #   pydantic
     #   pydantic-core
+    #   referencing
     #   sqlalchemy
     #   typing-inspect
     #   typing-inspection
@@ -577,5 +619,5 @@ yarl==1.20.1
     # via aiohttp
 zipp==3.23.0
     # via importlib-metadata
-zstandard==0.24.0
+zstandard==0.25.0
     # via langsmith
