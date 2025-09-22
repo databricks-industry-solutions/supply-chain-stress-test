@@ -43,7 +43,8 @@ LLM_ENDPOINT = "databricks-claude-sonnet-4"
 config = {
     "endpoint_name": LLM_ENDPOINT,
     "catalog": "supply_chain_stress_test",  # Change here
-    "database": "data",                     # Change here
+    "schema": "data",                       # Change here
+    "agent_name": "supply_chain_agent",     # Change here
     "volume": "operational",                # Change here
     "temperature": 0.01,
     "max_tokens": 10000,
@@ -89,7 +90,7 @@ config = {
 @tool
 def data_analysis_tool(
     catalog: str = config["catalog"],
-    database: str = config["database"],
+    schema: str = config["schema"],
     volume: str = config["volume"],
     ):
     """
@@ -97,7 +98,7 @@ def data_analysis_tool(
 
     Parameters:
     catalog (str): Catalog name for Unity Catalog.
-    database (str): Database name in Unity Catalog.
+    schema (str): Schema name in Unity Catalog.
     volume (str): Volume name in Unity Catalog.
     
     Returns:
@@ -105,7 +106,7 @@ def data_analysis_tool(
     """    
     # Get the operational data from Unity Catalog Volume
     w = WorkspaceClient(host=os.getenv("HOST"), token=os.getenv("TOKEN"))
-    path = f'/Volumes/{catalog}/{database}/{volume}/dataset_small.json'
+    path = f'/Volumes/{catalog}/{schema}/{volume}/dataset_small.json'
     resp = w.files.download(path)
     with resp.contents as fh:
         dataset = json.load(fh)
