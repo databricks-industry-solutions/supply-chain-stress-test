@@ -596,7 +596,7 @@ unitycatalog-langchain==0.2.0
     # via
     #   ka-chat-bot (pyproject.toml)
     #   databricks-langchain
-urllib3==2.5.0
+urllib3==2.6.0
     # via
     #   botocore
     #   databricks-agents
