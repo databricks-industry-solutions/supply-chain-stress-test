@@ -4,7 +4,7 @@ aiofiles==23.2.1
     # via ka-chat-bot (pyproject.toml)
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.12.15
+aiohttp==3.13.3
     # via
     #   aiohttp-retry
     #   langchain-community
