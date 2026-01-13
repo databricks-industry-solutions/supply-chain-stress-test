@@ -301,7 +301,7 @@ marshmallow==3.26.1
     # via dataclasses-json
 matplotlib==3.10.6
     # via mlflow
-mlflow==3.3.2
+mlflow==3.5.0
     # via
     #   ka-chat-bot (pyproject.toml)
     #   databricks-langchain
