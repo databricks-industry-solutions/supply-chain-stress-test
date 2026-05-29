@@ -79,6 +79,7 @@ contourpy==1.3.3
     # via matplotlib
 cryptography==46.0.7
     # via
+    #   -c constraints.txt
     #   azure-storage-blob
     #   google-auth
     #   mlflow
@@ -139,7 +140,9 @@ frozenlist==1.8.0
 gitdb==4.0.12
     # via gitpython
 gitpython==3.1.50
-    # via mlflow-skinny
+    # via
+    #   -c constraints.txt
+    #   mlflow-skinny
 google-api-core==2.30.3
     # via
     #   google-cloud-core
@@ -206,6 +209,7 @@ huey==2.6.0
     # via mlflow
 idna==3.16
     # via
+    #   -c constraints.txt
     #   anyio
     #   httpx
     #   requests
@@ -279,7 +283,9 @@ langsmith==0.8.5
     #   langchain-community
     #   langchain-core
 mako==1.3.12
-    # via alembic
+    # via
+    #   -c constraints.txt
+    #   alembic
 markupsafe==3.0.3
     # via
     #   flask
@@ -294,6 +300,7 @@ matplotlib==3.10.9
     # via mlflow
 mlflow==3.12.0
     # via
+    #   -c constraints.txt
     #   ka-chat-bot (pyproject.toml)
     #   databricks-langchain
 mlflow-skinny==3.12.0
@@ -347,6 +354,7 @@ opentelemetry-semantic-conventions==0.63b1
     # via opentelemetry-sdk
 orjson==3.11.9
     # via
+    #   -c constraints.txt
     #   langgraph-checkpoint-postgres
     #   langgraph-sdk
     #   langsmith
@@ -372,7 +380,9 @@ pandas==2.3.3
     #   mlflow
     #   unitycatalog-ai
 pillow==12.2.0
-    # via matplotlib
+    # via
+    #   -c constraints.txt
+    #   matplotlib
 prettytable==3.17.0
     # via skops
 propcache==0.5.2
@@ -383,6 +393,7 @@ proto-plus==1.28.0
     # via google-api-core
 protobuf==6.33.6
     # via
+    #   -c constraints.txt
     #   databricks-sdk
     #   databricks-vectorsearch
     #   google-api-core
@@ -452,6 +463,7 @@ python-dateutil==2.9.0.post0
     #   unitycatalog-client
 python-dotenv==1.2.2
     # via
+    #   -c constraints.txt
     #   ka-chat-bot (pyproject.toml)
     #   mlflow-skinny
     #   pydantic-settings
@@ -467,6 +479,7 @@ regex==2026.5.9
     # via tiktoken
 requests==2.34.2
     # via
+    #   -c constraints.txt
     #   azure-core
     #   databricks-sdk
     #   databricks-vectorsearch
@@ -512,7 +525,9 @@ sqlalchemy==2.0.49
     #   langchain-community
     #   mlflow
 sqlparse==0.5.5
-    # via mlflow-skinny
+    # via
+    #   -c constraints.txt
+    #   mlflow-skinny
 starlette==0.52.1
     # via
     #   -c constraints.txt
