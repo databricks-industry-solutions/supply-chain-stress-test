@@ -258,7 +258,7 @@ langchain-core==0.3.86
     #   langgraph-prebuilt
 langchain-openai==0.3.35
     # via ka-chat-bot (pyproject.toml)
-langchain-text-splitters==0.3.11
+langchain-text-splitters==1.1.2
     # via langchain
 langgraph==0.6.11
     # via ka-chat-bot (pyproject.toml)
