@@ -3,13 +3,13 @@
 
 export const config = {
   // Databricks Configuration
-  DATABRICKS_HOST: process.env.REACT_APP_DATABRICKS_HOST || 'adb-984752964297111.11.azuredatabricks.net',
-  
+  DATABRICKS_HOST: import.meta.env.VITE_DATABRICKS_HOST || 'adb-984752964297111.11.azuredatabricks.net',
+
   // MLflow Configuration
-  MLFLOW_EXPERIMENT_ID: process.env.REACT_APP_MLFLOW_EXPERIMENT_ID || '3668845090573368',
-  
+  MLFLOW_EXPERIMENT_ID: import.meta.env.VITE_MLFLOW_EXPERIMENT_ID || '3668845090573368',
+
   // API Configuration
-  API_BASE_URL: process.env.REACT_APP_API_BASE_URL || '/chat-api',
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || '/chat-api',
 };
 
 // Dynamic configuration that can be loaded from backend

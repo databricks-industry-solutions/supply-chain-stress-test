@@ -24,12 +24,17 @@ annotated-types==0.7.0
 anyio==4.13.0
     # via
     #   httpx
+    #   mcp
     #   openai
+    #   sse-starlette
     #   starlette
 asyncpg==0.31.0
     # via ka-chat-bot (pyproject.toml)
 attrs==26.1.0
-    # via aiohttp
+    # via
+    #   aiohttp
+    #   jsonschema
+    #   referencing
 azure-core==1.41.0
     # via
     #   -c constraints.txt
@@ -83,18 +88,26 @@ cryptography==46.0.7
     #   azure-storage-blob
     #   google-auth
     #   mlflow
+    #   pyjwt
 cycler==0.12.1
     # via matplotlib
 databricks-agents==1.10.2
     # via mlflow
 databricks-ai-bridge==0.19.0
-    # via databricks-langchain
-databricks-connect==17.3.9
     # via
-    #   ka-chat-bot (pyproject.toml)
-    #   unitycatalog-ai
-databricks-langchain==0.8.2
+    #   databricks-langchain
+    #   databricks-mcp
+    #   databricks-openai
+databricks-connect==17.3.9
+    # via unitycatalog-ai
+databricks-langchain==0.19.0
     # via ka-chat-bot (pyproject.toml)
+databricks-mcp==0.9.0
+    # via
+    #   databricks-langchain
+    #   databricks-openai
+databricks-openai==0.15.0
+    # via databricks-langchain
 databricks-sdk==0.94.0
     # via
     #   ka-chat-bot (pyproject.toml)
@@ -102,6 +115,7 @@ databricks-sdk==0.94.0
     #   databricks-ai-bridge
     #   databricks-connect
     #   databricks-langchain
+    #   databricks-mcp
     #   mlflow-skinny
     #   mlflow-tracing
     #   unitycatalog-ai
@@ -109,6 +123,7 @@ databricks-vectorsearch==0.66
     # via
     #   databricks-ai-bridge
     #   databricks-langchain
+    #   databricks-openai
 dataclasses-json==0.6.7
     # via
     #   databricks-agents
@@ -179,6 +194,8 @@ graphql-relay==3.2.0
     # via graphene
 greenlet==3.5.1
     # via ka-chat-bot (pyproject.toml)
+griffelib==2.0.2
+    # via openai-agents
 grpcio==1.80.0
     # via
     #   databricks-connect
@@ -202,9 +219,12 @@ httpx==0.28.1
     #   ka-chat-bot (pyproject.toml)
     #   langgraph-sdk
     #   langsmith
+    #   mcp
     #   openai
 httpx-sse==0.4.3
-    # via langchain-community
+    # via
+    #   langchain-community
+    #   mcp
 huey==2.6.0
     # via mlflow
 idna==3.16
@@ -238,48 +258,64 @@ jsonpatch==1.33
     # via langchain-core
 jsonpointer==3.1.1
     # via jsonpatch
+jsonschema==4.26.0
+    # via mcp
+jsonschema-specifications==2025.9.1
+    # via jsonschema
 kiwisolver==1.5.0
     # via matplotlib
-langchain==0.3.30
+langchain==1.3.1
     # via
     #   ka-chat-bot (pyproject.toml)
     #   databricks-langchain
-    #   langchain-community
     #   unitycatalog-langchain
-langchain-community==0.3.31
+langchain-classic==1.0.7
+    # via langchain-community
+langchain-community==0.4.1
     # via
     #   ka-chat-bot (pyproject.toml)
     #   unitycatalog-langchain
-langchain-core==0.3.86
+langchain-core==1.4.0
     # via
     #   -c constraints.txt
     #   langchain
+    #   langchain-classic
     #   langchain-community
+    #   langchain-mcp-adapters
     #   langchain-openai
     #   langchain-text-splitters
     #   langgraph
     #   langgraph-checkpoint
     #   langgraph-prebuilt
-langchain-openai==0.3.35
+langchain-mcp-adapters==0.2.2
+    # via databricks-langchain
+langchain-openai==1.2.2
     # via ka-chat-bot (pyproject.toml)
-langchain-text-splitters==0.3.11
-    # via langchain
-langgraph==0.6.11
-    # via ka-chat-bot (pyproject.toml)
-langgraph-checkpoint==3.0.1
+langchain-protocol==0.0.15
+    # via langchain-core
+langchain-text-splitters==1.1.2
     # via
+    #   ka-chat-bot (pyproject.toml)
+    #   langchain-classic
+langgraph==1.2.1
+    # via
+    #   ka-chat-bot (pyproject.toml)
+    #   langchain
+langgraph-checkpoint==4.1.0
+    # via
+    #   ka-chat-bot (pyproject.toml)
     #   langgraph
     #   langgraph-checkpoint-postgres
     #   langgraph-prebuilt
 langgraph-checkpoint-postgres==3.0.5
     # via ka-chat-bot (pyproject.toml)
-langgraph-prebuilt==0.6.5
+langgraph-prebuilt==1.1.0
     # via langgraph
-langgraph-sdk==0.2.15
+langgraph-sdk==0.3.14
     # via langgraph
 langsmith==0.8.5
     # via
-    #   langchain
+    #   langchain-classic
     #   langchain-community
     #   langchain-core
 mako==1.3.12
@@ -298,11 +334,18 @@ marshmallow==3.26.2
     #   dataclasses-json
 matplotlib==3.10.9
     # via mlflow
+mcp==1.27.1
+    # via
+    #   databricks-mcp
+    #   langchain-mcp-adapters
+    #   openai-agents
 mlflow==3.12.0
     # via
     #   -c constraints.txt
     #   ka-chat-bot (pyproject.toml)
     #   databricks-langchain
+    #   databricks-mcp
+    #   databricks-openai
 mlflow-skinny==3.12.0
     # via
     #   databricks-agents
@@ -335,7 +378,12 @@ numpy==2.4.6
 openai==2.38.0
     # via
     #   databricks-langchain
+    #   databricks-openai
     #   langchain-openai
+    #   openai-agents
+    #   unitycatalog-openai
+openai-agents==0.17.3
+    # via databricks-openai
 opentelemetry-api==1.42.1
     # via
     #   mlflow-skinny
@@ -435,21 +483,30 @@ pydantic==2.13.4
     #   databricks-agents
     #   databricks-ai-bridge
     #   databricks-langchain
+    #   databricks-openai
     #   fastapi
     #   langchain
+    #   langchain-classic
     #   langchain-core
     #   langgraph
     #   langsmith
+    #   mcp
     #   mlflow-skinny
     #   mlflow-tracing
     #   openai
+    #   openai-agents
     #   pydantic-settings
     #   unitycatalog-ai
     #   unitycatalog-client
+    #   unitycatalog-openai
 pydantic-core==2.46.4
     # via pydantic
 pydantic-settings==2.14.1
-    # via langchain-community
+    # via
+    #   langchain-community
+    #   mcp
+pyjwt==2.13.0
+    # via mcp
 pyomo==6.10.0
     # via ka-chat-bot (pyproject.toml)
 pyparsing==3.3.2
@@ -467,14 +524,20 @@ python-dotenv==1.2.2
     #   ka-chat-bot (pyproject.toml)
     #   mlflow-skinny
     #   pydantic-settings
+python-multipart==0.0.29
+    # via mcp
 pytz==2026.2
     # via pandas
 pyyaml==6.0.3
     # via
-    #   langchain
+    #   langchain-classic
     #   langchain-community
     #   langchain-core
     #   mlflow-skinny
+referencing==0.37.0
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
 regex==2026.5.9
     # via tiktoken
 requests==2.34.2
@@ -486,14 +549,19 @@ requests==2.34.2
     #   docker
     #   google-api-core
     #   google-cloud-storage
-    #   langchain
+    #   langchain-classic
     #   langchain-community
     #   langsmith
     #   mlflow-skinny
+    #   openai-agents
     #   requests-toolbelt
     #   tiktoken
 requests-toolbelt==1.0.0
     # via langsmith
+rpds-py==0.30.0
+    # via
+    #   jsonschema
+    #   referencing
 s3transfer==0.17.0
     # via boto3
 scikit-learn==1.8.0
@@ -521,18 +589,22 @@ sqlalchemy==2.0.49
     # via
     #   ka-chat-bot (pyproject.toml)
     #   alembic
-    #   langchain
+    #   langchain-classic
     #   langchain-community
     #   mlflow
 sqlparse==0.5.5
     # via
     #   -c constraints.txt
     #   mlflow-skinny
+sse-starlette==3.4.4
+    # via mcp
 starlette==0.52.1
     # via
     #   -c constraints.txt
     #   fastapi
+    #   mcp
     #   mlflow-skinny
+    #   sse-starlette
 tabulate==0.10.0
     # via databricks-ai-bridge
 tenacity==9.1.4
@@ -551,6 +623,8 @@ tqdm==4.67.3
     # via
     #   databricks-agents
     #   openai
+types-requests==2.33.0.20260518
+    # via openai-agents
 typing-extensions==4.15.0
     # via
     #   alembic
@@ -562,8 +636,12 @@ typing-extensions==4.15.0
     #   graphene
     #   grpcio
     #   langchain-core
+    #   langchain-mcp-adapters
+    #   langchain-protocol
+    #   mcp
     #   mlflow-skinny
     #   openai
+    #   openai-agents
     #   opentelemetry-api
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
@@ -580,20 +658,21 @@ typing-inspect==0.9.0
 typing-inspection==0.4.2
     # via
     #   fastapi
+    #   mcp
     #   pydantic
     #   pydantic-settings
 tzdata==2026.2
     # via pandas
 unitycatalog-ai==0.3.0
     # via
-    #   ka-chat-bot (pyproject.toml)
     #   unitycatalog-langchain
+    #   unitycatalog-openai
 unitycatalog-client==0.4.0
     # via unitycatalog-ai
-unitycatalog-langchain==0.2.0
-    # via
-    #   ka-chat-bot (pyproject.toml)
-    #   databricks-langchain
+unitycatalog-langchain==0.3.0
+    # via databricks-langchain
+unitycatalog-openai==0.2.0
+    # via databricks-openai
 urllib3==2.7.0
     # via
     #   -c constraints.txt
@@ -601,6 +680,7 @@ urllib3==2.7.0
     #   databricks-agents
     #   docker
     #   requests
+    #   types-requests
     #   unitycatalog-client
 uuid==1.30
     # via ka-chat-bot (pyproject.toml)
@@ -611,9 +691,12 @@ uuid-utils==0.16.0
 uvicorn==0.47.0
     # via
     #   ka-chat-bot (pyproject.toml)
+    #   mcp
     #   mlflow-skinny
 wcwidth==0.7.0
     # via prettytable
+websockets==16.0
+    # via openai-agents
 werkzeug==3.1.8
     # via
     #   -c constraints.txt
