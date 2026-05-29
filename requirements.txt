@@ -207,7 +207,7 @@ httpx-sse==0.4.3
     # via langchain-community
 huey==2.6.0
     # via mlflow
-idna==3.16
+idna==3.15
     # via
     #   -c constraints.txt
     #   anyio
