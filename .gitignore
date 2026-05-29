@@ -151,4 +151,5 @@ frontend_application/frontend/.env.production.local
 frontend_application/frontend/npm-debug.log*
 frontend_application/frontend/yarn-debug.log*
 frontend_application/frontend/yarn-error.log*
+frontend_application/frontend/build-chat-app/
 .DS_Store
