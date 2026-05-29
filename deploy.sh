@@ -179,9 +179,14 @@ echo "Installing frontend dependencies..."
   npm install
 ) &
 
-# Backend packaging 
+# Backend packaging
 echo "Freezing uv environment to requirements.txt..."
-uv pip compile pyproject.toml -c constraints.txt > requirements.txt &
+uv pip compile pyproject.toml -c constraints.txt > requirements.txt
+# Remove packages incompatible with Apps runtime (Python 3.11):
+# - databricks-connect requires Python ==3.12.* (transitive dep via databricks-langchain)
+# - unitycatalog-* and py4j are only needed for notebook execution, not the app
+grep -vE "^(databricks-connect|unitycatalog-ai|unitycatalog-langchain|unitycatalog-client|py4j)==" requirements.txt > requirements-app.txt
+mv requirements-app.txt requirements.txt &
 
 # Wait for both dependency processes to finish
 wait
