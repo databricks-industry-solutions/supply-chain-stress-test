@@ -7,36 +7,36 @@ name = "ka-chat-bot"
 version = "0.1.0"
 description = "Databricks Chat Bot Application"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
-    "fastapi==0.104.1",
-    "uvicorn==0.24.0",
+    "fastapi>=0.115.0,<1.0.0",
+    "uvicorn>=0.24.0",
     "pydantic>=2.5.0",
-    "python-dotenv==1.0.0",
-    "databricks-sdk==0.62.0",
-    "aiofiles==23.2.1",
-    "backoff==2.2.1",
-    "gunicorn==23.0.0",
-    "httpx==0.25.2",
-    "sqlalchemy==2.0.42",
+    "python-dotenv>=1.0.0",
+    "databricks-sdk>=0.62.0",
+    "aiofiles>=23.2.1",
+    "backoff>=2.2.1",
+    "gunicorn>=23.0.0",
+    "httpx>=0.25.2",
+    "sqlalchemy>=2.0.42",
     "asyncpg>=0.29.0",
     "greenlet>=2.0.0",
-    "langgraph-checkpoint-postgres==2.0.23",
-    "psycopg==3.2.9",
-    "psycopg-binary==3.2.9",
-    "psycopg2-binary==2.9.10",
-    "psycopg-pool==3.2.6",
-    "unitycatalog-langchain==0.2.0",
-    "langchain>=0.3.27",
-    "langchain-community",
-    "langgraph==0.6.4",
+    "langgraph-checkpoint-postgres>=2.0.23",
+    "psycopg>=3.2.9",
+    "psycopg-binary>=3.2.9",
+    "psycopg2-binary>=2.9.10",
+    "psycopg-pool>=3.2.6",
+    "unitycatalog-langchain>=0.2.0",
+    "langchain>=0.3.27,<1.0.0",
+    "langchain-community>=0.3.29,<1.0.0",
+    "langgraph>=0.6.4,<1.0.0",
     "langchain-openai",
     "databricks-langchain",
-    "databricks-connect==16.1.6",
+    "databricks-connect>=17.3,<18",
     "unitycatalog-ai[databricks]",
-    "mlflow[databricks]>=3.2.0",
-    "pyomo==6.9.2",
-    "highspy==1.10.0",
+    "mlflow[databricks]>=3.5.0,<4.0.0",
+    "pyomo>=6.9.2",
+    "highspy>=1.10.0",
     "uuid>=1.30",
 ]
 
@@ -52,7 +52,7 @@ dev = [
 ]
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py312"
 line-length = 88
 select = ["E", "F", "I", "N", "W", "B", "C4", "UP"]
 ignore = ["E501", "B008"]

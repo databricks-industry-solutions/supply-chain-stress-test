@@ -181,7 +181,7 @@ echo "Installing frontend dependencies..."
 
 # Backend packaging 
 echo "Freezing uv environment to requirements.txt..."
-uv pip compile pyproject.toml > requirements.txt &
+uv pip compile pyproject.toml -c constraints.txt > requirements.txt &
 
 # Wait for both dependency processes to finish
 wait
