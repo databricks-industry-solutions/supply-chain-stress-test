@@ -492,12 +492,15 @@ class ChatDatabase:
         """Initialize the database with required tables and indexes"""
         with self.db_lock:
             try:
-                Base.metadata.create_all(bind=self.engine)
-                logger.info("Database tables created successfully")                
-                
+                Base.metadata.create_all(bind=self.engine, checkfirst=True)
+                logger.info("Database tables created successfully")
+
             except Exception as e:
-                logger.error(f"Error initializing database: {str(e)}")
-                raise
+                if "already exists" in str(e):
+                    logger.info("Database tables already exist, skipping creation")
+                else:
+                    logger.error(f"Error initializing database: {str(e)}")
+                    raise
     
     def save_message_to_session(self, session_id: str, user_id: str, message: MessageResponse, user_info: dict = None, is_first_message: bool = False):
         """Save a message to a chat session, creating the session if it doesn't exist"""
