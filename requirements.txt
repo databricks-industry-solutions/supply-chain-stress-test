@@ -250,7 +250,7 @@ langchain-community==0.3.31
     # via
     #   ka-chat-bot (pyproject.toml)
     #   unitycatalog-langchain
-langchain-core==0.3.86
+langchain-core==1.3.3
     # via
     #   -c constraints.txt
     #   langchain
