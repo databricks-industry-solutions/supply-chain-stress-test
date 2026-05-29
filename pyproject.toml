@@ -7,7 +7,7 @@ name = "ka-chat-bot"
 version = "0.1.0"
 description = "Databricks Chat Bot Application"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115.0,<1.0.0",
     "uvicorn>=0.24.0",
@@ -32,7 +32,7 @@ dependencies = [
     "langgraph>=0.6.4,<1.0.0",
     "langchain-openai",
     "databricks-langchain",
-    "databricks-connect>=16.1.6",
+    "databricks-connect>=17.3,<18",
     "unitycatalog-ai[databricks]",
     "mlflow[databricks]>=3.5.0,<4.0.0",
     "pyomo>=6.9.2",
@@ -52,7 +52,7 @@ dev = [
 ]
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py312"
 line-length = 88
 select = ["E", "F", "I", "N", "W", "B", "C4", "UP"]
 ignore = ["E501", "B008"]

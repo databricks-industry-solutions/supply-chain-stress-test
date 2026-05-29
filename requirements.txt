@@ -88,7 +88,7 @@ databricks-agents==1.10.2
     # via mlflow
 databricks-ai-bridge==0.19.0
     # via databricks-langchain
-databricks-connect==17.0.10
+databricks-connect==17.3.9
     # via
     #   ka-chat-bot (pyproject.toml)
     #   unitycatalog-ai
@@ -569,7 +569,7 @@ typing-inspection==0.4.2
     #   pydantic-settings
 tzdata==2026.2
     # via pandas
-unitycatalog-ai==0.4.0
+unitycatalog-ai==0.3.0
     # via
     #   ka-chat-bot (pyproject.toml)
     #   unitycatalog-langchain
@@ -615,4 +615,6 @@ yarl==1.24.2
 zipp==4.1.0
     # via importlib-metadata
 zstandard==0.25.0
-    # via langsmith
+    # via
+    #   databricks-connect
+    #   langsmith

@@ -4,7 +4,7 @@ This guide provides step-by-step instructions to set up and deploy the Supply Ch
 
 ## 📋 Prerequisites
 
-- **Python 3.10+** installed on your system
+- **Python 3.12+** installed on your system
 - **Node.js 20+** and **npm** for frontend development
 - **Git** for version control
 - **Databricks workspace** with appropriate permissions

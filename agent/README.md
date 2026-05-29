@@ -2,7 +2,7 @@
 
 [![Databricks](https://img.shields.io/badge/Databricks-Solution_Accelerator-FF3621?style=for-the-badge&logo=databricks)](https://databricks.com)
 [![Unity Catalog](https://img.shields.io/badge/Unity_Catalog-Enabled-00A1C9?style=for-the-badge)](https://docs.databricks.com/en/data-governance/unity-catalog/index.html)
-[![DBR](https://img.shields.io/badge/DBR-16.4_LTS_ML-green?logo=databricks&style=for-the-badge)](https://docs.databricks.com/release-notes/runtime/16.4lts-ml.html)
+[![DBR](https://img.shields.io/badge/DBR-17.3_LTS_ML-green?logo=databricks&style=for-the-badge)](https://docs.databricks.com/release-notes/runtime/17.3lts-ml.html)
 
 ## Business Problem
 Efficiently managing supply chains has long been the top priority for retail, consumer goods, and manufacturing companies. This has become even more critical today as disruptions and uncertainties in supply chain networks continue to increase. Supply chain managers are increasingly adopting data driven approaches to maintain efficient logistics and quickly address issues that arise during operations. These approaches rely on collecting operational data from the supply chain network and typically integrate optimization techniques, often with mathematical models, at their core.
