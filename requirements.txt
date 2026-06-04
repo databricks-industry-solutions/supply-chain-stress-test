@@ -598,7 +598,7 @@ sqlparse==0.5.5
     #   mlflow-skinny
 sse-starlette==3.4.4
     # via mcp
-starlette==0.52.1
+starlette==1.0.1
     # via
     #   -c constraints.txt
     #   fastapi
