@@ -524,7 +524,7 @@ python-dotenv==1.2.2
     #   ka-chat-bot (pyproject.toml)
     #   mlflow-skinny
     #   pydantic-settings
-python-multipart==0.0.29
+python-multipart==0.0.31
     # via mcp
 pytz==2026.2
     # via pandas
