@@ -301,7 +301,7 @@ langgraph==1.2.1
     # via
     #   ka-chat-bot (pyproject.toml)
     #   langchain
-langgraph-checkpoint==4.1.0
+langgraph-checkpoint==4.1.1
     # via
     #   ka-chat-bot (pyproject.toml)
     #   langgraph
