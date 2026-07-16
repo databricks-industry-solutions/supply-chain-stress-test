@@ -334,7 +334,7 @@ marshmallow==3.26.2
     #   dataclasses-json
 matplotlib==3.10.9
     # via mlflow
-mcp==1.27.1
+mcp==1.28.1
     # via
     #   databricks-mcp
     #   langchain-mcp-adapters
