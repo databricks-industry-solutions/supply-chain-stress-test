@@ -24,6 +24,23 @@ def get_schema_name():
     """Get the schema name from environment variable with fallback"""
     return os.getenv('SCHEMA_NAME', 'chatbot_schema')
 
+def get_sp_client_id():
+    """Resolve the service principal client id used for database auth.
+
+    Falls back to DATABRICKS_CLIENT_ID, which Databricks Apps injects
+    automatically for the app's own service principal, so the app can connect
+    to a Lakebase resource without manually provisioning CLIENT_ID.
+    """
+    return os.getenv('CLIENT_ID') or os.getenv('DATABRICKS_CLIENT_ID')
+
+def get_sp_client_secret():
+    """Resolve the service principal client secret used for database auth.
+
+    Falls back to DATABRICKS_CLIENT_SECRET, which Databricks Apps injects
+    automatically for the app's own service principal.
+    """
+    return os.getenv('CLIENT_SECRET') or os.getenv('DATABRICKS_CLIENT_SECRET')
+
 Base = declarative_base()
 
 class SessionModel(Base):
@@ -79,9 +96,9 @@ def build_db_uri(username, instance_name, use_sp=True, async_driver=False):
     """
     if use_sp:
         w = WorkspaceClient(
-            host=os.getenv("DATABRICKS_HOST"), 
-            client_id=os.getenv("CLIENT_ID"), 
-            client_secret=os.getenv("CLIENT_SECRET")
+            host=os.getenv("DATABRICKS_HOST"),
+            client_id=get_sp_client_id(),
+            client_secret=get_sp_client_secret()
         )
     else:
         w = WorkspaceClient()
@@ -139,7 +156,7 @@ class ChatDatabase:
     async def _init_async_postgres(self):
         """Initialize async PostgreSQL connection"""
         try:
-            username = os.getenv("CLIENT_ID")
+            username = get_sp_client_id()
             instance_name = os.getenv("DB_INSTANCE_NAME")
             
             # Use the existing postgres_config if available
@@ -286,13 +303,18 @@ class ChatDatabase:
             raise
     
     def _has_postgres_config(self):
-        """Check if PostgreSQL configuration is available"""
-        return all(os.getenv(var) for var in ['DB_INSTANCE_NAME', 'CLIENT_ID', 'CLIENT_SECRET'])
+        """Check if PostgreSQL configuration is available.
+
+        Requires a database instance name plus service principal credentials.
+        The credentials may come from CLIENT_ID/CLIENT_SECRET or, on Databricks
+        Apps, from the auto-injected DATABRICKS_CLIENT_ID/DATABRICKS_CLIENT_SECRET.
+        """
+        return bool(os.getenv('DB_INSTANCE_NAME')) and bool(get_sp_client_id()) and bool(get_sp_client_secret())
     
     def _init_postgres(self):
         """Initialize PostgreSQL connection"""
         try:
-            username = os.getenv("CLIENT_ID")
+            username = get_sp_client_id()
             instance_name = os.getenv("DB_INSTANCE_NAME")
             
             # Store PostgreSQL configuration for dynamic token regeneration

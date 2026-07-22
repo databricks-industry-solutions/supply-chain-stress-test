@@ -182,10 +182,14 @@ echo "Installing frontend dependencies..."
 # Backend packaging
 echo "Freezing uv environment to requirements.txt..."
 uv pip compile pyproject.toml -c constraints.txt > requirements.txt
-# Remove packages incompatible with Apps runtime (Python 3.11):
+# Remove packages incompatible with (or unnecessary for) the Apps runtime (Python 3.11):
 # - databricks-connect requires Python ==3.12.* (transitive dep via databricks-langchain)
-# - unitycatalog-* and py4j are only needed for notebook execution, not the app
-grep -vE "^(databricks-connect|unitycatalog-ai|unitycatalog-langchain|unitycatalog-client|py4j)==" requirements.txt > requirements-app.txt
+# - databricks-langchain / databricks-openai and the unitycatalog-* chain are only used
+#   by the notebooks and the agent, not by the FastAPI app. They also pin
+#   unitycatalog-langchain, whose 0.4.0 caps langchain<=1.2.10 and conflicts with the
+#   security-patched langchain>=1.3.9, so pip cannot resolve the app bundle with them in.
+# - py4j is only needed for notebook (Spark) execution, not the app.
+grep -vE "^(databricks-connect|databricks-langchain|databricks-openai|unitycatalog-ai|unitycatalog-langchain|unitycatalog-client|unitycatalog-openai|py4j)==" requirements.txt > requirements-app.txt
 mv requirements-app.txt requirements.txt &
 
 # Wait for both dependency processes to finish
