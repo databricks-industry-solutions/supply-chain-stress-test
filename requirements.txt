@@ -588,7 +588,7 @@ scipy==1.17.1
     #   mlflow
     #   scikit-learn
     #   skops
-setuptools==82.0.1
+setuptools==83.0.0
     # via databricks-connect
 six==1.17.0
     # via
