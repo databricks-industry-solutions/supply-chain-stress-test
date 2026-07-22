@@ -132,6 +132,16 @@ dmypy.json
 .pyre/
 
 .env
+.env.*
+!env.example
+
+# Generated at deploy time by deploy.sh from .env — contains resolved secrets
+# (CLIENT_SECRET, LOCAL_API_TOKEN, DB credentials, ...) as plaintext values.
+# Never commit it.
+app.yaml
+
+# Databricks CLI local state/cache
+.databricks/
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
