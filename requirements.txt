@@ -481,7 +481,7 @@ pyarrow==23.0.1
     # via
     #   databricks-connect
     #   mlflow
-pyasn1==0.6.3
+pyasn1==0.6.4
     # via
     #   -c constraints.txt
     #   pyasn1-modules
