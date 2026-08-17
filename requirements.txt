@@ -635,7 +635,7 @@ sqlalchemy==2.0.49
     #   langchain-classic
     #   langchain-community
     #   mlflow
-sqlparse==0.5.5
+sqlparse==0.6.0
     # via
     #   -c constraints.txt
     #   -c (workspace)
