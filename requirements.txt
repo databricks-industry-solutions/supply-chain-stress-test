@@ -538,7 +538,7 @@ pydantic-settings==2.14.2
     #   -c (workspace)
     #   langchain-community
     #   mcp
-pyjwt==2.13.0
+pyjwt==2.15.0
     # via mcp
 pyomo==6.10.0
     # via ka-chat-bot (pyproject.toml)
