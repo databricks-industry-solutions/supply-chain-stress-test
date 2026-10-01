@@ -719,7 +719,7 @@ unitycatalog-langchain==0.3.0
     # via databricks-langchain
 unitycatalog-openai==0.2.0
     # via databricks-openai
-urllib3==2.7.0
+urllib3==2.8.0
     # via
     #   -c constraints.txt
     #   -c (workspace)
