@@ -747,7 +747,7 @@ websockets==15.0.1
     #   langgraph-sdk
     #   langsmith
     #   openai-agents
-werkzeug==3.1.8
+werkzeug==3.1.9
     # via
     #   -c constraints.txt
     #   -c (workspace)
