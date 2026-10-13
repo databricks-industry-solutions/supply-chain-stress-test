@@ -328,7 +328,7 @@ langgraph-checkpoint-postgres==3.0.5
     # via ka-chat-bot (pyproject.toml)
 langgraph-prebuilt==1.1.0
     # via langgraph
-langgraph-sdk==0.4.2
+langgraph-sdk==0.4.4
     # via
     #   -c constraints.txt
     #   -c (workspace)
