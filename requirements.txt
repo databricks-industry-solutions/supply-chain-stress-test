@@ -358,7 +358,7 @@ marshmallow==3.26.2
     #   dataclasses-json
 matplotlib==3.10.9
     # via mlflow
-mcp==1.28.1
+mcp==1.30.0
     # via
     #   -c constraints.txt
     #   -c (workspace)
