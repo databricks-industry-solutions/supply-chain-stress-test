@@ -46,7 +46,6 @@ config = {
     "schema": "data",                       # Change here
     "agent_name": "supply_chain_agent",     # Change here
     "volume": "operational",                # Change here
-    "temperature": 0.01,
     "max_tokens": 10000,
     "system_prompt": """You are a helpful assistant that answers questions about supply chain. Questions outside this topic are considered irrelevant. You use a set of tools to provide answers. You may need to execute multiple tools in sequence to build up the final answer. When you receive a request, first plan the steps carefully and then execute.
 
@@ -230,7 +229,6 @@ class SupplyChainAgent(ChatAgent):
     def _build_agent_from_config(self):
         llm = ChatDatabricks(
             endpoint=self.config.get("endpoint_name"),
-            temperature=self.config.get("temperature"),
             max_tokens=self.config.get("max_tokens"),
         )
         agent = create_tool_calling_agent(
