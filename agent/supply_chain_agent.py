@@ -198,6 +198,14 @@ def create_tool_calling_agent(
         config: RunnableConfig,
     ):
         response = model_runnable.invoke(state, config)
+        # Reasoning models return a list of content blocks; keep only the text so
+        # downstream consumers receive a plain string
+        if isinstance(response.content, list):
+            response.content = "".join(
+                block.get("text", "")
+                for block in response.content
+                if isinstance(block, dict) and block.get("type") == "text"
+            )
 
         return {"messages": [response]}
 
