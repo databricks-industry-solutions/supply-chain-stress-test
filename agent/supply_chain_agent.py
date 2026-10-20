@@ -38,7 +38,7 @@ mlflow.langchain.autolog()
 ############################################
 # Define your LLM endpoint and system prompt
 ############################################
-LLM_ENDPOINT = "databricks-claude-sonnet-4"
+LLM_ENDPOINT = "databricks-claude-sonnet-5-5"
 
 config = {
     "endpoint_name": LLM_ENDPOINT,
