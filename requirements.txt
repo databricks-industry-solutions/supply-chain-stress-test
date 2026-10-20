@@ -346,7 +346,7 @@ langsmith==0.10.4
     #   langchain-classic
     #   langchain-community
     #   langchain-core
-mako==1.3.12
+mako==1.4.3
     # via
     #   -c constraints.txt
     #   -c (workspace)
@@ -387,8 +387,10 @@ mlflow-skinny==3.17.1
     #   mlflow
 mlflow-tracing==3.17.1
     # via mlflow
-multidict==6.7.1
+multidict==7.1.0
     # via
+    #   -c constraints.txt
+    #   -c (workspace)
     #   aiohttp
     #   yarl
 mypy-extensions==1.1.0
