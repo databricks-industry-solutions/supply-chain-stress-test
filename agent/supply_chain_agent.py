@@ -38,7 +38,7 @@ mlflow.langchain.autolog()
 ############################################
 # Define your LLM endpoint and system prompt
 ############################################
-LLM_ENDPOINT = "databricks-claude-sonnet-4"
+LLM_ENDPOINT = "databricks-claude-sonnet-5-5"
 
 config = {
     "endpoint_name": LLM_ENDPOINT,
@@ -46,7 +46,6 @@ config = {
     "schema": "data",                       # Change here
     "agent_name": "supply_chain_agent",     # Change here
     "volume": "operational",                # Change here
-    "temperature": 0.01,
     "max_tokens": 10000,
     "system_prompt": """You are a helpful assistant that answers questions about supply chain. Questions outside this topic are considered irrelevant. You use a set of tools to provide answers. You may need to execute multiple tools in sequence to build up the final answer. When you receive a request, first plan the steps carefully and then execute.
 
@@ -199,6 +198,20 @@ def create_tool_calling_agent(
         config: RunnableConfig,
     ):
         response = model_runnable.invoke(state, config)
+        # Reasoning models return a list of content blocks, which ChatDatabricks
+        # serializes to a JSON string; keep only the text so clients get plain text
+        content = response.content
+        if isinstance(content, str) and content.startswith("[{"):
+            try:
+                content = json.loads(content)
+            except ValueError:
+                pass
+        if isinstance(content, list):
+            response.content = "".join(
+                block.get("text", "")
+                for block in content
+                if isinstance(block, dict) and block.get("type") == "text"
+            )
 
         return {"messages": [response]}
 
@@ -230,7 +243,6 @@ class SupplyChainAgent(ChatAgent):
     def _build_agent_from_config(self):
         llm = ChatDatabricks(
             endpoint=self.config.get("endpoint_name"),
-            temperature=self.config.get("temperature"),
             max_tokens=self.config.get("max_tokens"),
         )
         agent = create_tool_calling_agent(
