@@ -371,7 +371,7 @@ mcp==1.30.0
     #   databricks-mcp
     #   langchain-mcp-adapters
     #   openai-agents
-mlflow==3.17.1
+mlflow==3.17.2
     # via
     #   -c constraints.txt
     #   -c (workspace)
