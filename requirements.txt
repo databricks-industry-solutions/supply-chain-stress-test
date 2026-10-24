@@ -620,7 +620,7 @@ scipy==1.17.1
     #   mlflow
     #   scikit-learn
     #   skops
-setuptools==83.0.0
+setuptools==84.1.0
     # via
     #   -c constraints.txt
     #   -c (workspace)
