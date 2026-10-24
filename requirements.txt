@@ -417,7 +417,7 @@ openai==2.38.0
     #   unitycatalog-openai
 openai-agents==0.17.3
     # via databricks-openai
-opentelemetry-api==1.42.1
+opentelemetry-api==1.45.1
     # via
     #   mlflow-skinny
     #   mlflow-tracing
