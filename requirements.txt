@@ -315,7 +315,7 @@ langchain-text-splitters==1.1.2
     # via
     #   ka-chat-bot (pyproject.toml)
     #   langchain-classic
-langgraph==1.2.9
+langgraph==1.2.14
     # via
     #   ka-chat-bot (pyproject.toml)
     #   langchain
